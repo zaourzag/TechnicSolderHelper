@@ -15,6 +15,8 @@ namespace TechnicSolderHelper.FileUpload.sftp
 {
     public partial class SFTPInfo : Form
     {
+        ConfigHandler ch = new ConfigHandler();
+        Crypto crypto = new Crypto();
         public SFTPInfo()
         {
             InitializeComponent();
@@ -29,8 +31,8 @@ namespace TechnicSolderHelper.FileUpload.sftp
             else
             {
                 
-                    Crypto crypto = new Crypto();
-                    ConfigHandler ch = new ConfigHandler();
+                    
+                    
                     ch.SetConfig("sftpUserName", user.Text);
                     ch.SetConfig("sftpHost", host.Text);
                 ch.SetConfig("sftpPort", port.Text);
@@ -55,6 +57,22 @@ namespace TechnicSolderHelper.FileUpload.sftp
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void SFTPInfo_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                user.Text = ch.GetConfig("sftpUserName");
+                host.Text = ch.GetConfig("sftpHost");
+                port.Text = ch.GetConfig("sftpPort");
+                password.Text = crypto.DecryptString(ch.GetConfig("sftpPassword"));
+                destination.Text = ch.GetConfig("sftpDest");
+            }
+            catch (Exception)
+            {
+                
             }
         }
     }

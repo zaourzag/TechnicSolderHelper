@@ -769,6 +769,7 @@ namespace TechnicSolderHelper
             this.Name = "SolderHelper";
             this.Text = "Modpack Helper";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnApplicationClosing);
+            this.Load += new System.EventHandler(this.SolderHelper_Load);
             this.Resize += new System.EventHandler(this.form_resize);
             this.TechnicDistributionLevel.ResumeLayout(false);
             this.TechnicDistributionLevel.PerformLayout();

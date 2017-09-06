@@ -1907,7 +1907,7 @@ namespace TechnicSolderHelper
 
         private void checkBox2_CheckedChanged(object sender, EventArgs e)
         {
-            _confighandler.SetConfig("UploadToSFTPServer", UploadToFTPServer.Checked);
+            _confighandler.SetConfig("UploadToSFTPServer", uploadSFTP.Checked);
 
             if (uploadSFTP.Checked)
             {
@@ -1940,6 +1940,12 @@ namespace TechnicSolderHelper
                 return;
             }
             
+        }
+
+        private void SolderHelper_Load(object sender, EventArgs e)
+        {
+            uploadSFTP.Checked = bool.Parse(_confighandler.GetConfig("UploadToSFTPServer"));
+            checkBox2_CheckedChanged(null,null);
         }
 
         private void button6_Click(object sender, EventArgs e)

@@ -194,6 +194,7 @@
             this.Controls.Add(this.label1);
             this.Name = "SFTPInfo";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.SFTPInfo_Load);
             ((System.ComponentModel.ISupportInitialize)(this.port)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
