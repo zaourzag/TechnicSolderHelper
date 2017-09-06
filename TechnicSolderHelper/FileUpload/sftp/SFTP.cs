@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using Renci.SshNet;
+using TechnicSolderHelper.cryptography;
 using TechnicSolderHelper.Confighandler;
 
 namespace TechnicSolderHelper.FileUpload.sftp
@@ -12,20 +13,23 @@ namespace TechnicSolderHelper.FileUpload.sftp
 
         public SFTP()
         {
+            Crypto crypto = new Crypto();
             client = new SftpClient(cfg.GetConfig("sftpHost"), int.Parse(cfg.GetConfig("sftpPort")),
-                cfg.GetConfig("sftpUserName"), cfg.GetConfig("sftpPassword"));
+                cfg.GetConfig("sftpUserName"), crypto.DecryptString(cfg.GetConfig("sftpPassword")));
+            client.Connect();
         }
 
         public SFTP(string host, string username,
             string password, int port)
         {
             client = new SftpClient(host, port, username, password);
+            client.Connect();
         }
 
 
         public void UploadSFTPFile(string sourcefile, string destinationpath)
         {
-            client.Connect();
+            
             client.ChangeDirectory(destinationpath);
             using (var fs = new FileStream(sourcefile, FileMode.Open))
             {
