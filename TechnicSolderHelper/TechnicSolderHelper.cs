@@ -1909,7 +1909,7 @@ namespace TechnicSolderHelper
         {
             _confighandler.SetConfig("UploadToSFTPServer", UploadToFTPServer.Checked);
 
-            if (UploadToFTPServer.Checked)
+            if (uploadSFTP.Checked)
             {
                /* bool hasbeenwarned = false;
                 try
