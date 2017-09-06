@@ -1911,10 +1911,10 @@ namespace TechnicSolderHelper
 
             if (uploadSFTP.Checked)
             {
-               /* bool hasbeenwarned = false;
+               bool hasbeenwarned = false;
                 try
                 {
-                    hasbeenwarned = Convert.ToBoolean(_confighandler.GetConfig("HasBeenWarnedAboutLongFTPTimes"));
+                    hasbeenwarned = Convert.ToBoolean(_confighandler.GetConfig("HasBeenWarnedAboutLongSFTPTimes"));
                 }
                 catch
                 {
@@ -1922,16 +1922,15 @@ namespace TechnicSolderHelper
                 }
                 if (!hasbeenwarned)
                 {
-                    _confighandler.SetConfig("HasBeenWarnedAboutLongFTPTimes", true);
-                    var responce = MessageBox.Show(@"Uploading to FTP can take a very long time. Do you still want to upload to FTP?", @"FTP upload", MessageBoxButtons.YesNo);
-                    if (responce == DialogResult.Yes)
-                        configureFTP.Show();
-                    else
+                    _confighandler.SetConfig("HasBeenWarnedAboutLongSFTPTimes", true);
+                    var responce = MessageBox.Show("Uploading with SFTP may be Slower or Faster than FTP, depending on your network. The Upload may take some time.\nDo you still want to use SFTP?", @"SFTP upload", MessageBoxButtons.YesNo);
+                    if (responce == DialogResult.No)
+                        
                     {
-                        UploadToFTPServer.Checked = false;
+                        uploadSFTP.Checked = false;
                         return;
                     }
-                }*/
+                }
                 configureSFTP.Show();
             }
             else

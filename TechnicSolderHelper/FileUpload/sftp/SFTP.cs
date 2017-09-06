@@ -26,7 +26,10 @@ namespace TechnicSolderHelper.FileUpload.sftp
             client.Connect();
         }
 
-
+        public void Delete(string path)
+        {
+            client.Delete(path);
+        }
         public void UploadSFTPFile(string sourcefile, string destinationpath)
         {
             
