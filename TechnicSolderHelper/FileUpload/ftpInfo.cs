@@ -76,10 +76,11 @@ namespace TechnicSolderHelper.FileUpload
                     request.Method = WebRequestMethods.Ftp.ListDirectory;
                     request.Credentials = new NetworkCredential(user, password);
                     request.GetResponse();
+
                 }
                 catch (WebException ex)
                 {
-                    return ex.Message;
+                    return ex.Message + " --> " + ((FtpWebResponse)ex.Response).StatusDescription; ;
                 }
                 return "All is working fine!!";
             }

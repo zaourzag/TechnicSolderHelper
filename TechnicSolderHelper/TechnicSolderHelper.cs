@@ -14,6 +14,7 @@ using System.Windows.Forms;
 using Newtonsoft.Json;
 using TechnicSolderHelper.Confighandler;
 using TechnicSolderHelper.FileUpload;
+using TechnicSolderHelper.FileUpload.sftp;
 using TechnicSolderHelper.s3;
 using TechnicSolderHelper.SmallInterfaces;
 using TechnicSolderHelper.SQL;
@@ -51,7 +52,8 @@ namespace TechnicSolderHelper
         //private bool UpdatingForge, updatingPermissions;
         private bool _updatingForge;
         private bool _updatingPermissions;
-        private bool _uploadingToFtp, _uploadingToS3;
+        private bool _uploadingToFtp, _uploadingToS3, _uploadingToSFtp;
+        
         private int _runningProcess;
         private readonly Dictionary<string, int> _processesUsingFolder = new Dictionary<string, int>();
 
@@ -84,8 +86,17 @@ namespace TechnicSolderHelper
                 _uploadingToFtp = value;
                 AsyncLockInterface();
             }
-        }
 
+        }
+        private bool UploadingToSFTP
+        {
+            get { return _uploadingToSFtp; }
+            set
+            {
+                _uploadingToFtp = value;
+                AsyncLockInterface();
+            }
+        }
         private bool UploadingToS3
         {
             get { return _uploadingToS3; }
@@ -116,7 +127,7 @@ namespace TechnicSolderHelper
             }
             else
             {
-                this.Enabled = !UploadingToFTP && !UploadingToS3;
+                this.Enabled = !UploadingToFTP && !UploadingToS3 && !UploadingToSFTP;
 
             }
         }
@@ -1146,44 +1157,66 @@ namespace TechnicSolderHelper
                 }
 
             }
-            if (CreateTechnicPack.Checked && SolderPack.Checked && UploadToFTPServer.Checked)
+            if (CreateTechnicPack.Checked && SolderPack.Checked)
             {
-                StatusLabel.Text = "Uploading to FTP";
-                UploadingToFTP = true;
-                BackgroundWorker bwFtp = new BackgroundWorker();
-                bwFtp.DoWork += (s, a) =>
+                if (uploadSFTP.Checked)
                 {
-                    if (_ftp == null)
+                    StatusLabel.Text = "Uploading to SFTP";
+                    UploadingToSFTP = true;
+                    BackgroundWorker bwFtp = new BackgroundWorker();
+                    bwFtp.DoWork += (s, a) =>
                     {
-                        _ftp = new Ftp();
-                    }
-                    _ftp.UploadFolder(Path.Combine(_outputDirectory, "mods"));
-                };
-                bwFtp.RunWorkerCompleted += (s, a) =>
+                        SFTP sftp = new SFTP();
+                        sftp.UploadFolder(Path.Combine(_outputDirectory, "mods"),_confighandler.GetConfig("sftpDest"));
+                        sftp.Dispose();
+                    };
+                    bwFtp.RunWorkerCompleted += (s, a) =>
+                    {
+                        UploadingToSFTP = false;
+                        MessageBox.Show("Done uploading to SFTP");
+                    };
+                    bwFtp.RunWorkerAsync();
+                }
+                if (UploadToFTPServer.Checked)
                 {
-                    UploadingToFTP = false;
-                    MessageBox.Show("Done uploading to FTP");
-                };
-                bwFtp.RunWorkerAsync();
+                    StatusLabel.Text = "Uploading to FTP";
+                    UploadingToFTP = true;
+                    BackgroundWorker bwFtp = new BackgroundWorker();
+                    bwFtp.DoWork += (s, a) =>
+                    {
+                        if (_ftp == null)
+                        {
+                            _ftp = new Ftp();
+                        }
+                        _ftp.UploadFolder(Path.Combine(_outputDirectory, "mods"));
+                    };
+                    bwFtp.RunWorkerCompleted += (s, a) =>
+                    {
+                        UploadingToFTP = false;
+                        MessageBox.Show("Done uploading to FTP");
+                    };
+                    bwFtp.RunWorkerAsync();
+                }
+                if (UseS3.Checked)
+                {
+                    StatusLabel.Text = "Uploading to S3";
+                    UploadingToS3 = true;
+                    BackgroundWorker bwS3 = new BackgroundWorker();
+                    bwS3.DoWork += (s, a) =>
+                    {
+                        S3 s3Client = new S3();
+                        s3Client.UploadFolder(Path.Combine(_outputDirectory, "mods"));
+                        UploadingToS3 = false;
+                    };
+                    bwS3.RunWorkerCompleted += (s, a) =>
+                    {
+                        UploadingToS3 = false;
+                    };
+                    bwS3.RunWorkerAsync();
+                }
             }
 
-            if (CreateTechnicPack.Checked && SolderPack.Checked && UseS3.Checked)
-            {
-                StatusLabel.Text = "Uploading to S3";
-                UploadingToS3 = true;
-                BackgroundWorker bwS3 = new BackgroundWorker();
-                bwS3.DoWork += (s, a) =>
-                {
-                    S3 s3Client = new S3();
-                    s3Client.UploadFolder(Path.Combine(_outputDirectory, "mods"));
-                    UploadingToS3 = false;
-                };
-                bwS3.RunWorkerCompleted += (s, a) =>
-                {
-                    UploadingToS3 = false;
-                };
-                bwS3.RunWorkerAsync();
-            }
+            
 
             InputFolder.Items.Clear();
             try
@@ -1870,6 +1903,49 @@ namespace TechnicSolderHelper
             String json = JsonConvert.SerializeObject(_inputDirectories);
             FileInfo inputDirectoriesFile = new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SolderHelper", "inputDirectories.json"));
             File.WriteAllText(inputDirectoriesFile.ToString(), json);
+        }
+
+        private void checkBox2_CheckedChanged(object sender, EventArgs e)
+        {
+            _confighandler.SetConfig("UploadToSFTPServer", UploadToFTPServer.Checked);
+
+            if (UploadToFTPServer.Checked)
+            {
+               /* bool hasbeenwarned = false;
+                try
+                {
+                    hasbeenwarned = Convert.ToBoolean(_confighandler.GetConfig("HasBeenWarnedAboutLongFTPTimes"));
+                }
+                catch
+                {
+                    // ignored
+                }
+                if (!hasbeenwarned)
+                {
+                    _confighandler.SetConfig("HasBeenWarnedAboutLongFTPTimes", true);
+                    var responce = MessageBox.Show(@"Uploading to FTP can take a very long time. Do you still want to upload to FTP?", @"FTP upload", MessageBoxButtons.YesNo);
+                    if (responce == DialogResult.Yes)
+                        configureFTP.Show();
+                    else
+                    {
+                        UploadToFTPServer.Checked = false;
+                        return;
+                    }
+                }*/
+                configureSFTP.Show();
+            }
+            else
+            {
+                configureSFTP.Hide();
+                return;
+            }
+            
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            FileUpload.sftp.SFTPInfo sftp = new SFTPInfo();
+            sftp.ShowDialog();
         }
 
         private void testmysql_Click(object sender, EventArgs e)
