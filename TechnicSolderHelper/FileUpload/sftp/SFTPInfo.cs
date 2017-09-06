@@ -48,28 +48,33 @@ namespace TechnicSolderHelper.FileUpload.sftp
             string lines = "First line.\r\nSecond line.\r\nThird line.\r\nUpload OK!";
 
             // Write the string to a file.
-            Guid g = Guid.NewGuid();
-            string uuid = Convert.ToBase64String(g.ToByteArray());
-            uuid = uuid.Replace("=", "");
+            string uuid = Guid.NewGuid().ToString();
+            
             string filePath = (System.IO.Path.Combine(System.IO.Path.GetTempPath(), "TestFile-" + uuid + ".txt"));
-            System.IO.StreamWriter file = new System.IO.StreamWriter(filePath);
-            file.WriteLine(lines);
+            using(System.IO.StreamWriter file = new System.IO.StreamWriter(filePath)){
+                file.WriteLine(lines);
 
-            file.Close();
-            try
-            {
-                
-                SFTP sftp = new SFTP(host.Text, user.Text, password.Text, int.Parse(port.Text));
-                sftp.UploadSFTPFile(
-                    filePath, destination.Text );
-                sftp.Delete(filePath);
-                sftp.Dispose();
-                MessageBox.Show("Uploaded Test File \"TestFile.txt\"", "OK", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                file.Close();
+                try
+                {
+
+                    SFTP sftp = new SFTP(host.Text, user.Text, password.Text, int.Parse(port.Text));
+                    sftp.UploadSFTPFile(
+                        filePath, destination.Text);
+                    sftp.Delete(filePath);
+                    sftp.Dispose();
+                    MessageBox.Show("Uploaded Test File \"TestFile.txt\"", "OK", MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+                finally
+                {
+                    File.Delete(filePath);
+                }
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            } finally { File.Delete(filePath);}
         }
 
         private void SFTPInfo_Load(object sender, EventArgs e)
