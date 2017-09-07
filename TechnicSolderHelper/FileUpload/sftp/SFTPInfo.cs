@@ -63,7 +63,7 @@ namespace TechnicSolderHelper.FileUpload.sftp
                         filePath, destination.Text);
                     sftp.Delete(filePath);
                     sftp.Dispose();
-                    MessageBox.Show("Uploaded Test File \"TestFile.txt\"", "OK", MessageBoxButtons.OK,
+                    MessageBox.Show("Uploaded Test File (and already deleted it.)", "OK", MessageBoxButtons.OK,
                         MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
