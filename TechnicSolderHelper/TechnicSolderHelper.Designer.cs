@@ -92,6 +92,8 @@ namespace TechnicSolderHelper
             this.minimumMemoryTextBox = new System.Windows.Forms.TextBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.forcesolder = new System.Windows.Forms.CheckBox();
+            this.configureSFTP = new System.Windows.Forms.Button();
+            this.uploadSFTP = new System.Windows.Forms.CheckBox();
             this.label3 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.doDebug = new System.Windows.Forms.CheckBox();
@@ -663,6 +665,29 @@ namespace TechnicSolderHelper
             this.toolTip1.SetToolTip(this.forcesolder, "Will force Modpack Helper to update all data on Solder and create all mods");
             this.forcesolder.UseVisualStyleBackColor = true;
             // 
+            // configureSFTP
+            // 
+            this.configureSFTP.Location = new System.Drawing.Point(316, 253);
+            this.configureSFTP.Name = "configureSFTP";
+            this.configureSFTP.Size = new System.Drawing.Size(107, 23);
+            this.configureSFTP.TabIndex = 43;
+            this.configureSFTP.Text = "Configure SFTP";
+            this.toolTip1.SetToolTip(this.configureSFTP, "Configure where your files are uploaded");
+            this.configureSFTP.UseVisualStyleBackColor = true;
+            this.configureSFTP.Click += new System.EventHandler(this.button6_Click);
+            // 
+            // uploadSFTP
+            // 
+            this.uploadSFTP.AutoSize = true;
+            this.uploadSFTP.Location = new System.Drawing.Point(315, 228);
+            this.uploadSFTP.Name = "uploadSFTP";
+            this.uploadSFTP.Size = new System.Drawing.Size(142, 17);
+            this.uploadSFTP.TabIndex = 42;
+            this.uploadSFTP.Text = "Upload to SFTP address";
+            this.toolTip1.SetToolTip(this.uploadSFTP, "Automatically upload your mods to a server? (Only works for Solder Packs)");
+            this.uploadSFTP.UseVisualStyleBackColor = true;
+            this.uploadSFTP.CheckedChanged += new System.EventHandler(this.checkBox2_CheckedChanged);
+            // 
             // label3
             // 
             this.label3.AutoSize = true;
@@ -696,6 +721,8 @@ namespace TechnicSolderHelper
             this.AcceptButton = this.button1;
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
             this.ClientSize = new System.Drawing.Size(784, 483);
+            this.Controls.Add(this.configureSFTP);
+            this.Controls.Add(this.uploadSFTP);
             this.Controls.Add(this.doDebug);
             this.Controls.Add(this.forcesolder);
             this.Controls.Add(this.label6);
@@ -742,6 +769,7 @@ namespace TechnicSolderHelper
             this.Name = "SolderHelper";
             this.Text = "Modpack Helper";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnApplicationClosing);
+            this.Load += new System.EventHandler(this.SolderHelper_Load);
             this.Resize += new System.EventHandler(this.form_resize);
             this.TechnicDistributionLevel.ResumeLayout(false);
             this.TechnicDistributionLevel.PerformLayout();
@@ -1103,5 +1131,7 @@ namespace TechnicSolderHelper
         private Label label6;
         private CheckBox forcesolder;
         private CheckBox doDebug;
+        private Button configureSFTP;
+        private CheckBox uploadSFTP;
     }
 }
