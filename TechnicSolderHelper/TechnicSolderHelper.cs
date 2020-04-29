@@ -350,7 +350,7 @@ namespace TechnicSolderHelper
             if (!(Globalfunctions.IsUnix() || File.Exists(_sevenZipLocation)))
             {
                 WebClient wb = new WebClient();
-                Uri sevenWeb = new Uri("http://cloud.zlepper.dk/7za.exe");
+                Uri sevenWeb = new Uri("https://www.dropbox.com/s/oct206mp41bj8vu/7za.exe?dl=1");
                 wb.DownloadFile(sevenWeb, _sevenZipLocation);
             }
             _confighandler.SetConfig("InputDirectory", InputFolder.Text);
