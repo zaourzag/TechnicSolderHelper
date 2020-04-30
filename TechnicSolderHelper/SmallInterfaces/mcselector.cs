@@ -1,30 +1,30 @@
 ﻿using System;
 using System.Windows.Forms;
-using TechnicSolderHelper.SQL.forge;
+using TechnicSolderHelper.SQL.Forge;
 
 namespace TechnicSolderHelper.SmallInterfaces
 {
-    public partial class Mcselector : Form
+    public partial class McSelector : Form
     {
         private readonly SolderHelper _solderHelper;
-        public Mcselector(SolderHelper sh)
+        public McSelector(SolderHelper solderHelper)
         {
-            _solderHelper = sh;
+            _solderHelper = solderHelper;
             InitializeComponent();
-            ForgeSqlHelper f = new ForgeSqlHelper();
-            mcversions.Items.AddRange(f.GetMcVersions().ToArray());
+            ForgeSqlHelper forgeSqlHelper = new ForgeSqlHelper();
+            mcVersionDropdown.Items.AddRange(forgeSqlHelper.GetMcVersions().ToArray());
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void acceptButton_Click(object sender, EventArgs e)
         {
-            int index = mcversions.SelectedIndex;
+            int index = mcVersionDropdown.SelectedIndex;
             if (index == -1)
             {
-                MessageBox.Show("You need to select a minecraft version to continue.");
+                MessageBox.Show("You need to select a Minecraft version to continue.");
                 return;
             }
-            String s = mcversions.SelectedItem.ToString();
-            _solderHelper._currentMcVersion = s;
+            string mcVersion = mcVersionDropdown.SelectedItem.ToString();
+            _solderHelper._currentMcVersion = mcVersion;
             Close();
         }
     }

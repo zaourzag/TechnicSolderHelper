@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace TechnicSolderHelper
@@ -16,9 +13,9 @@ namespace TechnicSolderHelper
         private static readonly StringBuilder sb = new StringBuilder();
         private static CheckBox _box;
 
-        public static void AssignCheckbox(CheckBox b)
+        public static void AssignCheckbox(CheckBox checkBox)
         {
-            _box = b;
+            _box = checkBox;
         }
 
         public static void WriteLine(string text, bool condition = false)

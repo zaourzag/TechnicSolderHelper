@@ -49,10 +49,10 @@ namespace TechnicSolderHelper
             }
             List<FileInfo> outputFiles = new List<FileInfo>();
             // Read from the zip file
-            using (Stream filestream = pathToArchive.OpenRead())
+            using (Stream fileStream = pathToArchive.OpenRead())
             {
                 // Create a zip archive to work through
-                using (ZipArchive archive = new ZipArchive(filestream))
+                using (ZipArchive archive = new ZipArchive(fileStream))
                 {
                     // Iterate over all the entries in the zip file that's end in .info or .json
                     // And skip and dependencies files, since we can't use them anyway
@@ -62,8 +62,8 @@ namespace TechnicSolderHelper
                         using (Stream f = entry.Open())
                         {
                             // Create the output file
-                            string p = Path.Combine(directoryToExtractTo.FullName, entry.Name);
-                            FileInfo outFile = new FileInfo(p);
+                            string path = Path.Combine(directoryToExtractTo.FullName, entry.Name);
+                            FileInfo outFile = new FileInfo(path);
                             using (Stream o = outFile.Create())
                             {
                                 // Write to the output file
@@ -92,10 +92,10 @@ namespace TechnicSolderHelper
             }
             List<FileInfo> outputFiles = new List<FileInfo>();
             // Read from the zip file
-            using (Stream filestream = pathToArchive.OpenRead())
+            using (Stream fileStream = pathToArchive.OpenRead())
             {
                 // Create a zip archive to work through
-                using (ZipArchive archive = new ZipArchive(filestream))
+                using (ZipArchive archive = new ZipArchive(fileStream))
                 {
                     // Iterate over all the entries in the zip file that's end in .info or .json
                     // And skip and dependencies files, since we can't use them anyway
@@ -208,7 +208,7 @@ namespace TechnicSolderHelper
             return false;
         }
 
-        public void SpecialPackSolderMod(FileInfo modfile, FileInfo zipFile)
+        public void SpecialPackSolderMod(FileInfo modFile, FileInfo zipFile)
         {
             // Check is the zip file is actually a zip file
             if (!zipFile.Name.EndsWith(".zip", StringComparison.OrdinalIgnoreCase))
@@ -220,12 +220,12 @@ namespace TechnicSolderHelper
             {
                 using (ZipArchive zip = new ZipArchive(zipFileStream, ZipArchiveMode.Update))
                 {
-                    string entryName = "mods/" + modfile.Name;
+                    string entryName = "mods/" + modFile.Name;
                     ZipArchiveEntry entry = zip.CreateEntry(entryName);
 
                     using (StreamWriter writer = new StreamWriter(entry.Open()))
                     {
-                        using (Stream reader = modfile.OpenRead())
+                        using (Stream reader = modFile.OpenRead())
                         {
                             reader.CopyTo(writer.BaseStream);
                         }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace TechnicSolderHelper
 {
@@ -7,7 +6,7 @@ namespace TechnicSolderHelper
     {
 
 
-        public static string ShowDialog(string text, string caption, Boolean showSkip = true,  String extraText = null)
+        public static string ShowDialog(string text, string caption, bool showSkip = true, string extraText = null)
         {
             Form prompt = new Form
             {
@@ -44,8 +43,9 @@ namespace TechnicSolderHelper
             return textBox.Text;
         }
 
-        public static String ModsLeftString(short totalmods, short currentMod) {
-            return String.Format("You are at mod {0} of {1} mods total", currentMod, totalmods);
+        public static string ModsLeftString(short totalMods, short currentMod)
+        {
+            return string.Format("You are at mod {0} of {1} mods total", currentMod, totalMods);
         }
     }
 }

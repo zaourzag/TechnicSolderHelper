@@ -6,12 +6,12 @@ namespace TechnicSolderHelper
     {
         public void FirstTimeRun()
         {
-            MessageBox.Show("This is the first time you are running SolderHelper so it might take a while to start  since it needs to build some databases.");
+            MessageBox.Show("This is the first time you are running TechnicSolderHelper so it might take a while to start, since it needs to build some databases.");
         }
 
         public void UploadingToFtp()
         {
-            MessageBox.Show("Uploading stuff to FTP");
+            MessageBox.Show("Uploading files to FTP");
         }
 
         public void UploadToS3()

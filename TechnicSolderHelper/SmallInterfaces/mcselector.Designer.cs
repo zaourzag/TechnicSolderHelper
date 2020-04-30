@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace TechnicSolderHelper.SmallInterfaces
 {
-    partial class Mcselector
+    partial class McSelector
     {
         /// <summary>
         /// Required designer variable.
@@ -31,49 +31,50 @@ namespace TechnicSolderHelper.SmallInterfaces
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.mcversions = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.questionLabel = new System.Windows.Forms.Label();
+            this.mcVersionDropdown = new System.Windows.Forms.ComboBox();
+            this.acceptButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // label1
+            // questionLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(29, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(229, 13);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "What is the Minecraft Version of the modpack?";
+            this.questionLabel.AutoSize = true;
+            this.questionLabel.Location = new System.Drawing.Point(29, 9);
+            this.questionLabel.Name = "questionLabel";
+            this.questionLabel.Size = new System.Drawing.Size(228, 13);
+            this.questionLabel.TabIndex = 0;
+            this.questionLabel.Text = "What is the Minecraft version of the modpack?";
             // 
-            // mcversions
+            // mcVersionDropdown
             // 
-            this.mcversions.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.mcversions.FormattingEnabled = true;
-            this.mcversions.Location = new System.Drawing.Point(77, 39);
-            this.mcversions.Name = "mcversions";
-            this.mcversions.Size = new System.Drawing.Size(121, 21);
-            this.mcversions.TabIndex = 1;
+            this.mcVersionDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.mcVersionDropdown.FormattingEnabled = true;
+            this.mcVersionDropdown.Location = new System.Drawing.Point(77, 39);
+            this.mcVersionDropdown.Name = "mcVersionDropdown";
+            this.mcVersionDropdown.Size = new System.Drawing.Size(121, 21);
+            this.mcVersionDropdown.TabIndex = 1;
             // 
-            // button1
+            // acceptButton
             // 
-            this.button1.Location = new System.Drawing.Point(102, 66);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "Accept";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.acceptButton.Location = new System.Drawing.Point(102, 66);
+            this.acceptButton.Name = "acceptButton";
+            this.acceptButton.Size = new System.Drawing.Size(75, 23);
+            this.acceptButton.TabIndex = 2;
+            this.acceptButton.Text = "Accept";
+            this.acceptButton.UseVisualStyleBackColor = true;
+            this.acceptButton.Click += new System.EventHandler(this.acceptButton_Click);
             // 
-            // mcselector
+            // McSelector
             // 
-            this.AcceptButton = this.button1;
+            this.AcceptButton = this.acceptButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(284, 103);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.mcversions);
-            this.Controls.Add(this.label1);
-            this.Name = "Mcselector";
+            this.Controls.Add(this.acceptButton);
+            this.Controls.Add(this.mcVersionDropdown);
+            this.Controls.Add(this.questionLabel);
+            this.Name = "McSelector";
+            this.ShowIcon = false;
             this.Text = "Minecraft Version";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -82,8 +83,8 @@ namespace TechnicSolderHelper.SmallInterfaces
 
         #endregion
 
-        private Label label1;
-        private ComboBox mcversions;
-        private Button button1;
+        private Label questionLabel;
+        private ComboBox mcVersionDropdown;
+        private Button acceptButton;
     }
 }

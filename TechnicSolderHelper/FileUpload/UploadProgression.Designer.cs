@@ -31,89 +31,90 @@ namespace TechnicSolderHelper.FileUpload
         /// </summary>
         private void InitializeComponent()
         {
-            this.FileProgress = new System.Windows.Forms.ProgressBar();
-            this.TotalProgress = new System.Windows.Forms.ProgressBar();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.CurrentFileName = new System.Windows.Forms.Label();
-            this.ProgressPercentage = new System.Windows.Forms.Label();
+            this.fileProgressBar = new System.Windows.Forms.ProgressBar();
+            this.totalProgressBar = new System.Windows.Forms.ProgressBar();
+            this.fileProgressLabel = new System.Windows.Forms.Label();
+            this.totalProgressLabel = new System.Windows.Forms.Label();
+            this.currentFileTextLabel = new System.Windows.Forms.Label();
+            this.currentFileNameLabel = new System.Windows.Forms.Label();
+            this.progressPercentageLabel = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
-            // FileProgress
+            // fileProgressBar
             // 
-            this.FileProgress.Location = new System.Drawing.Point(12, 72);
-            this.FileProgress.Name = "FileProgress";
-            this.FileProgress.Size = new System.Drawing.Size(260, 23);
-            this.FileProgress.TabIndex = 0;
+            this.fileProgressBar.Location = new System.Drawing.Point(12, 76);
+            this.fileProgressBar.Name = "fileProgressBar";
+            this.fileProgressBar.Size = new System.Drawing.Size(260, 23);
+            this.fileProgressBar.TabIndex = 0;
             // 
-            // TotalProgress
+            // totalProgressBar
             // 
-            this.TotalProgress.Location = new System.Drawing.Point(12, 25);
-            this.TotalProgress.Name = "TotalProgress";
-            this.TotalProgress.Size = new System.Drawing.Size(260, 23);
-            this.TotalProgress.TabIndex = 1;
+            this.totalProgressBar.Location = new System.Drawing.Point(12, 25);
+            this.totalProgressBar.Name = "totalProgressBar";
+            this.totalProgressBar.Size = new System.Drawing.Size(260, 23);
+            this.totalProgressBar.TabIndex = 1;
             // 
-            // label1
+            // fileProgressLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 53);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(66, 13);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "File progress";
+            this.fileProgressLabel.AutoSize = true;
+            this.fileProgressLabel.Location = new System.Drawing.Point(9, 57);
+            this.fileProgressLabel.Name = "fileProgressLabel";
+            this.fileProgressLabel.Size = new System.Drawing.Size(66, 13);
+            this.fileProgressLabel.TabIndex = 2;
+            this.fileProgressLabel.Text = "File progress";
             // 
-            // label2
+            // totalProgressLabel
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(12, 9);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(75, 13);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "Total Progress";
+            this.totalProgressLabel.AutoSize = true;
+            this.totalProgressLabel.Location = new System.Drawing.Point(9, 9);
+            this.totalProgressLabel.Name = "totalProgressLabel";
+            this.totalProgressLabel.Size = new System.Drawing.Size(74, 13);
+            this.totalProgressLabel.TabIndex = 3;
+            this.totalProgressLabel.Text = "Total progress";
             // 
-            // label3
+            // currentFileTextLabel
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 102);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(63, 13);
-            this.label3.TabIndex = 4;
-            this.label3.Text = "Current File:";
+            this.currentFileTextLabel.AutoSize = true;
+            this.currentFileTextLabel.Location = new System.Drawing.Point(12, 109);
+            this.currentFileTextLabel.Name = "currentFileTextLabel";
+            this.currentFileTextLabel.Size = new System.Drawing.Size(63, 13);
+            this.currentFileTextLabel.TabIndex = 4;
+            this.currentFileTextLabel.Text = "Current File:";
             // 
-            // CurrentFileName
+            // currentFileNameLabel
             // 
-            this.CurrentFileName.AutoSize = true;
-            this.CurrentFileName.Location = new System.Drawing.Point(82, 102);
-            this.CurrentFileName.Name = "CurrentFileName";
-            this.CurrentFileName.Size = new System.Drawing.Size(79, 13);
-            this.CurrentFileName.TabIndex = 5;
-            this.CurrentFileName.Text = "Some file name";
+            this.currentFileNameLabel.AutoSize = true;
+            this.currentFileNameLabel.Location = new System.Drawing.Point(82, 109);
+            this.currentFileNameLabel.Name = "currentFileNameLabel";
+            this.currentFileNameLabel.Size = new System.Drawing.Size(79, 13);
+            this.currentFileNameLabel.TabIndex = 5;
+            this.currentFileNameLabel.Text = "Some file name";
             // 
-            // ProgressPercentage
+            // progressPercentageLabel
             // 
-            this.ProgressPercentage.AutoSize = true;
-            this.ProgressPercentage.Location = new System.Drawing.Point(85, 55);
-            this.ProgressPercentage.Name = "ProgressPercentage";
-            this.ProgressPercentage.Size = new System.Drawing.Size(35, 13);
-            this.ProgressPercentage.TabIndex = 6;
-            this.ProgressPercentage.Text = "label4";
+            this.progressPercentageLabel.AutoSize = true;
+            this.progressPercentageLabel.Location = new System.Drawing.Point(77, 57);
+            this.progressPercentageLabel.Name = "progressPercentageLabel";
+            this.progressPercentageLabel.Size = new System.Drawing.Size(21, 13);
+            this.progressPercentageLabel.TabIndex = 6;
+            this.progressPercentageLabel.Text = "0%";
             // 
             // UploadProgression
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(284, 125);
-            this.Controls.Add(this.ProgressPercentage);
-            this.Controls.Add(this.CurrentFileName);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.TotalProgress);
-            this.Controls.Add(this.FileProgress);
+            this.ClientSize = new System.Drawing.Size(284, 131);
+            this.Controls.Add(this.progressPercentageLabel);
+            this.Controls.Add(this.currentFileNameLabel);
+            this.Controls.Add(this.currentFileTextLabel);
+            this.Controls.Add(this.totalProgressLabel);
+            this.Controls.Add(this.fileProgressLabel);
+            this.Controls.Add(this.totalProgressBar);
+            this.Controls.Add(this.fileProgressBar);
             this.MaximizeBox = false;
             this.Name = "UploadProgression";
-            this.Text = "UploadProgression";
+            this.ShowIcon = false;
+            this.Text = "Upload Progress";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -121,13 +122,13 @@ namespace TechnicSolderHelper.FileUpload
 
         #endregion
 
-        private ProgressBar FileProgress;
-        private ProgressBar TotalProgress;
-        private Label label1;
-        private Label label2;
-        private Label label3;
-        private Label CurrentFileName;
-        private Label ProgressPercentage;
+        private ProgressBar fileProgressBar;
+        private ProgressBar totalProgressBar;
+        private Label fileProgressLabel;
+        private Label totalProgressLabel;
+        private Label currentFileTextLabel;
+        private Label currentFileNameLabel;
+        private Label progressPercentageLabel;
         private BackgroundWorker uploadWorker;
     }
 }

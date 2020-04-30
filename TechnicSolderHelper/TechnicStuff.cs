@@ -15,9 +15,9 @@ namespace TechnicSolderHelper
         public StringBuilder AddedModStringBuilder = new StringBuilder();
         private readonly Dictionary<string, int> _processesUsingModID = new Dictionary<string, int>();
 
-        private void CreateOwnPermissionInfo(string modname, string modid, string modauthor, string linkToPermission, string modLink)
+        private void CreateOwnPermissionInfo(string modName, string modid, string modAuthor, string linkToPermission, string modLink)
         {
-            string output = string.Format("{0}({1}) by {2} {3}Permission: {4} {3}Link to mod: {5}{3}{3}", modname, modid, modauthor, Environment.NewLine, linkToPermission, modLink);
+            string output = string.Format("{0}({1}) by {2} {3}Permission: {4} {3}Link to mod: {5}{3}{3}", modName, modid, modAuthor, Environment.NewLine, linkToPermission, modLink);
             File.AppendAllText(_ftbOwnPermissionList, output);
         }
 
@@ -34,12 +34,12 @@ namespace TechnicSolderHelper
 
         private void CreateConfigZip()
         {
-            if (SolderPack.Checked)
+            if (solderPackRadioButton.Checked)
             {
-                string inputDirectory = InputFolder.Text;
+                string inputDirectory = this.inputDirectoryTextBox.Text;
                 inputDirectory = inputDirectory.Replace(Globalfunctions.PathSeperator + "mods", "");
 
-                _outputDirectory = OutputFolder.Text;
+                _outputDirectory = outputDirectoryTextBox.Text;
                 string configFileName;
                 if (_modpackName == null)
                     configFileName =
@@ -73,7 +73,7 @@ namespace TechnicSolderHelper
 
                 _process.WaitForExit();
 
-                if (!useSolder.Checked)
+                if (!useSolderCheckBox.Checked)
                     return;
                 int id = _solderSqlHandler.GetModId(configFileName.ToLower());
                 if (id == -1)
@@ -82,10 +82,10 @@ namespace TechnicSolderHelper
                     id = _solderSqlHandler.GetModId(configFileName.ToLower());
                 }
                 string outputFile = Path.Combine(_outputDirectory, "mods", configFileName.ToLower(), configFileZipName.ToLower());
-                _solderSqlHandler.AddNewModversionToSolder(id, _modpackVersion, SqlHelper.CalculateMd5(outputFile).ToLower());
+                _solderSqlHandler.AddNewModVersionToSolder(id, _modpackVersion, SqlHelper.CalculateMd5(outputFile).ToLower());
 
-                int modVersionId = _solderSqlHandler.GetModversionId(_solderSqlHandler.GetModId(configFileName.ToLower()), _modpackVersion);
-                _solderSqlHandler.AddModversionToBuild(_buildId, modVersionId);
+                int modVersionId = _solderSqlHandler.GetModVersionId(_solderSqlHandler.GetModId(configFileName.ToLower()), _modpackVersion);
+                _solderSqlHandler.AddModVersionToBuild(_buildId, modVersionId);
             }
             else
             {
@@ -108,23 +108,23 @@ namespace TechnicSolderHelper
 
         }
 
-        private void CreateTechnicPermissionInfo(Mcmod mod, PermissionPolicy pl, string customPermissionText = null)
+        private void CreateTechnicPermissionInfo(McMod mod, PermissionPolicy pl, string customPermissionText = null)
         {
-            string modlink = _ftbPermsSqLhelper.GetPermissionFromModId(mod.Modid).modAuthors;
+            string modlink = _ftbPermsSqLhelper.GetPermissionFromModId(mod.modId).modAuthors;
             while (string.IsNullOrWhiteSpace(modlink) || !Uri.IsWellFormedUriString(modlink, UriKind.Absolute))
             {
                 modlink = Prompt.ShowDialog("What is the link to " + mod.Name + "?", "Mod link", false, Prompt.ModsLeftString(_totalMods, _currentMod));
                 if (!Uri.IsWellFormedUriString(modlink, UriKind.Absolute))
                 {
-                    MessageBox.Show("Not a proper url");
+                    MessageBox.Show("Not a proper URL");
                 }
             }
             CreateTechnicPermissionInfo(mod, pl, customPermissionText, modlink);
         }
 
-        private void CreateTechnicPermissionInfo(Mcmod mod, PermissionPolicy pl, string customPermissionText, string modlink)
+        private void CreateTechnicPermissionInfo(McMod mod, PermissionPolicy pl, string customPermissionText, string modLink)
         {
-            string ps = string.Format("{0}({1}) by {2}{3}At {4}{3}Permissions are {5}{3}", mod.Name, mod.Modid, GetAuthors(mod), Environment.NewLine, modlink, pl);
+            string ps = string.Format("{0}({1}) by {2}{3}At {4}{3}Permissions are {5}{3}", mod.Name, mod.modId, GetAuthors(mod), Environment.NewLine, modLink, pl);
             if (!string.IsNullOrWhiteSpace(customPermissionText))
             {
                 ps += customPermissionText + Environment.NewLine;
@@ -132,20 +132,20 @@ namespace TechnicSolderHelper
             File.AppendAllText(_technicPermissionList, ps + Environment.NewLine);
         }
 
-        public void CreateTechnicModZip(Mcmod mod, string modfile)
+        public void CreateTechnicModZip(McMod mod, string modFilePath)
         {
             if (mod.IsSkipping)
             {
                 return;
             }
-            string fileName = modfile.Substring(modfile.LastIndexOf(Globalfunctions.PathSeperator) + 1);
-            string modMd5 = SqlHelper.CalculateMd5(modfile);
-            _modsSqLhelper.AddMod(mod.Name, mod.Modid, mod.Version, mod.Mcversion, fileName, modMd5, false);
+            string fileName = modFilePath.Substring(modFilePath.LastIndexOf(Globalfunctions.PathSeperator) + 1);
+            string modMd5 = SqlHelper.CalculateMd5(modFilePath);
+            _modsSqLhelper.AddMod(mod.Name, mod.modId, mod.Version, mod.McVersion, fileName, modMd5, false);
             # region permissions
-            if (TechnicPermissions.Checked)
+            if (checkTechnicPermissionsCheckBox.Checked)
             {
-                PermissionPolicy permissionPolicy = _ftbPermsSqLhelper.FindPermissionPolicy(mod.Modid, TechnicPublicPermissions.Checked);
-                string overwritelink;
+                PermissionPolicy permissionPolicy = _ftbPermsSqLhelper.FindPermissionPolicy(mod.modId, technicPublicPackRadioButton.Checked);
+                string overwriteLink;
                 OwnPermissions ownPermissions;
                 string customPermissionText;
                 switch (permissionPolicy)
@@ -154,138 +154,138 @@ namespace TechnicSolderHelper
                         CreateTechnicPermissionInfo(mod, permissionPolicy);
                         break;
                     case PermissionPolicy.Notify:
-                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.Modid);
+                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.modId);
                         if (!ownPermissions.HasPermission)
                         {
-                            overwritelink = Prompt.ShowDialog(mod.Name + " requires that you notify the author of inclusion." + Environment.NewLine + "Please provide proof(an imgur link) that you have done this:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
+                            overwriteLink = Prompt.ShowDialog(mod.Name + " requires that you notify the author of inclusion." + Environment.NewLine + "Please provide proof (an imgur link) that you have done this:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
                             while (true)
                             {
-                                if (overwritelink.ToLower().Equals("skip".ToLower()))
+                                if (overwriteLink.ToLower().Equals("skip".ToLower()))
                                 {
                                     mod.IsSkipping = true;
                                     return;
                                 }
-                                if (Uri.IsWellFormedUriString(overwritelink, UriKind.Absolute))
+                                if (Uri.IsWellFormedUriString(overwriteLink, UriKind.Absolute))
                                 {
-                                    if (overwritelink.ToLower().Contains("imgur"))
+                                    if (overwriteLink.ToLower().Contains("imgur"))
                                     {
-                                        _ownPermsSqLhelper.AddOwnModPerm(mod.Name, mod.Modid, overwritelink);
-                                        customPermissionText = "Proof of notitification: " + overwritelink;
-                                        CreateTechnicPermissionInfo(mod, permissionPolicy, customPermissionText, _ftbPermsSqLhelper.GetPermissionFromModId(mod.Modid).modLink);
+                                        _ownPermsSqLhelper.AddOwnModPerm(mod.Name, mod.modId, overwriteLink);
+                                        customPermissionText = "Proof of notification: " + overwriteLink;
+                                        CreateTechnicPermissionInfo(mod, permissionPolicy, customPermissionText, _ftbPermsSqLhelper.GetPermissionFromModId(mod.modId).modLink);
                                         break;
                                     }
                                 }
-                                overwritelink = Prompt.ShowDialog(mod.Name + " requires that you notify the author of inclusion." + Environment.NewLine + "Please provide proof(an imgur link) that you have done this:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
+                                overwriteLink = Prompt.ShowDialog(mod.Name + " requires that you notify the author of inclusion." + Environment.NewLine + "Please provide proof (an imgur link) that you have done this:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
                             }
                         }
                         else
                         {
-                            customPermissionText = "Proof of notitification: " + ownPermissions.PermissionLink;
+                            customPermissionText = "Proof of notification: " + ownPermissions.PermissionLink;
                             CreateTechnicPermissionInfo(mod, permissionPolicy, customPermissionText);
                         }
                         break;
                     case PermissionPolicy.FTB:
-                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.Modid);
+                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.modId);
                         if (!ownPermissions.HasPermission)
                         {
-                            overwritelink = Prompt.ShowDialog("Permissions for " + mod.Name + " is FTB exclusive" + Environment.NewLine + "Please provide proof(an imgur link) of things being otherwise:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
+                            overwriteLink = Prompt.ShowDialog("Permissions for " + mod.Name + " are FTB exclusive" + Environment.NewLine + "Please provide proof (an imgur link) that you have permission to include this mod:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
                             while (true)
                             {
-                                if (overwritelink.ToLower().Equals("skip".ToLower()))
+                                if (overwriteLink.ToLower().Equals("skip".ToLower()))
                                 {
                                     mod.IsSkipping = true;
                                     return;
                                 }
-                                if (Uri.IsWellFormedUriString(overwritelink, UriKind.Absolute))
+                                if (Uri.IsWellFormedUriString(overwriteLink, UriKind.Absolute))
                                 {
-                                    if (overwritelink.ToLower().Contains("imgur"))
+                                    if (overwriteLink.ToLower().Contains("imgur"))
                                     {
-                                        _ownPermsSqLhelper.AddOwnModPerm(mod.Name, mod.Modid, overwritelink, _ftbPermsSqLhelper.GetPermissionFromModId(mod.Modid).modLink);
+                                        _ownPermsSqLhelper.AddOwnModPerm(mod.Name, mod.modId, overwriteLink, _ftbPermsSqLhelper.GetPermissionFromModId(mod.modId).modLink);
                                         break;
                                     }
                                 }
-                                overwritelink = Prompt.ShowDialog("Permissions for " + mod.Name + " is FTB exclusive" + Environment.NewLine + "Please provide proof(an imgur link) of things being otherwise:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
+                                overwriteLink = Prompt.ShowDialog("Permissions for " + mod.Name + " are FTB exclusive" + Environment.NewLine + "Please provide proof (an imgur link) that you have permission to include this mod:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
                             }
                         }
-                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.Modid);
+                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.modId);
                         customPermissionText = "Proof of permission outside of FTB: " + ownPermissions.PermissionLink;
                         CreateTechnicPermissionInfo(mod, permissionPolicy, customPermissionText, ownPermissions.ModLink);
                         break;
                     case PermissionPolicy.Request:
-                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.Modid);
+                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.modId);
                         if (!ownPermissions.HasPermission)
                         {
-                            overwritelink = Prompt.ShowDialog("This mod requires that you request permissions from the Mod Author of " + mod.Name + Environment.NewLine + "Please provide proof(an imgur link) that you have this permission:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name);
+                            overwriteLink = Prompt.ShowDialog("This mod requires that you request permissions from the mod author of " + mod.Name + Environment.NewLine + "Please provide proof (an imgur link) that you have this permission:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name);
                             while (true)
                             {
-                                if (overwritelink.ToLower().Equals("skip".ToLower()))
+                                if (overwriteLink.ToLower().Equals("skip".ToLower()))
                                 {
                                     mod.IsSkipping = true;
                                     return;
                                 }
-                                if (Uri.IsWellFormedUriString(overwritelink, UriKind.Absolute))
+                                if (Uri.IsWellFormedUriString(overwriteLink, UriKind.Absolute))
                                 {
-                                    if (overwritelink.ToLower().Contains("imgur"))
+                                    if (overwriteLink.ToLower().Contains("imgur"))
                                     {
-                                        _ownPermsSqLhelper.AddOwnModPerm(mod.Name, mod.Modid, overwritelink, _ftbPermsSqLhelper.GetPermissionFromModId(mod.Modid).modLink);
+                                        _ownPermsSqLhelper.AddOwnModPerm(mod.Name, mod.modId, overwriteLink, _ftbPermsSqLhelper.GetPermissionFromModId(mod.modId).modLink);
                                         break;
                                     }
                                 }
-                                overwritelink = Prompt.ShowDialog("This mod requires that you request permissions from the Mod Author of " + mod.Name + Environment.NewLine + "Please provide proof(an imgur link) that you have this permission:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
+                                overwriteLink = Prompt.ShowDialog("This mod requires that you request permissions from the mod author of " + mod.Name + Environment.NewLine + "Please provide proof (an imgur link) that you have this permission:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
                             }
                         }
-                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.Modid);
+                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.modId);
                         customPermissionText = GetAuthors(mod) + " has given permission as seen here: " + ownPermissions.PermissionLink;
                         CreateTechnicPermissionInfo(mod, permissionPolicy, customPermissionText, ownPermissions.ModLink);
                         break;
                     case PermissionPolicy.Closed:
-                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.Modid);
+                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.modId);
                         if (!ownPermissions.HasPermission)
                         {
-                            overwritelink = Prompt.ShowDialog("The FTB permissionsheet states that permissions for " + mod.Name + " is closed." + Environment.NewLine + "Please provide proof(an imgur link) that this is not the case:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
+                            overwriteLink = Prompt.ShowDialog("The FTB permissionsheet states that permissions for " + mod.Name + " are closed." + Environment.NewLine + "Please provide proof (an imgur link) that you have permission to include this mod:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
                             while (true)
                             {
-                                if (overwritelink.ToLower().Equals("skip".ToLower()))
+                                if (overwriteLink.ToLower().Equals("skip".ToLower()))
                                 {
                                     mod.IsSkipping = true;
                                     return;
                                 }
-                                if (Uri.IsWellFormedUriString(overwritelink, UriKind.Absolute))
+                                if (Uri.IsWellFormedUriString(overwriteLink, UriKind.Absolute))
                                 {
-                                    if (overwritelink.ToLower().Contains("imgur"))
+                                    if (overwriteLink.ToLower().Contains("imgur"))
                                     {
-                                        _ownPermsSqLhelper.AddOwnModPerm(mod.Name, mod.Modid, overwritelink, _ftbPermsSqLhelper.GetPermissionFromModId(mod.Modid).modLink);
+                                        _ownPermsSqLhelper.AddOwnModPerm(mod.Name, mod.modId, overwriteLink, _ftbPermsSqLhelper.GetPermissionFromModId(mod.modId).modLink);
                                         break;
                                     }
                                 }
-                                overwritelink = Prompt.ShowDialog("The FTB permissionsheet states that permissions for " + mod.Name + " is closed." + Environment.NewLine + "Please provide proof(an imgur link) that this is not the case:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name);
+                                overwriteLink = Prompt.ShowDialog("The FTB permissionsheet states that permissions for " + mod.Name + " is closed." + Environment.NewLine + "Please provide proof (an imgur link) that you have permission to include this mod:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name);
                             }
                         }
-                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.Modid);
+                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.modId);
                         customPermissionText = GetAuthors(mod) + " has given permission as seen here: " + ownPermissions.PermissionLink;
                         CreateTechnicPermissionInfo(mod, permissionPolicy, customPermissionText, ownPermissions.ModLink);
                         break;
                     case PermissionPolicy.Unknown:
-                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.Modid);
+                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.modId);
                         var modLink = ownPermissions.ModLink;
                         if (!ownPermissions.HasPermission)
                         {
-                            overwritelink = Prompt.ShowDialog("Permissions for " + mod.Name + " is unknown" + Environment.NewLine + "Please provide proof(an imgur link) of permissions:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
+                            overwriteLink = Prompt.ShowDialog("Permissions for " + mod.Name + " are unknown" + Environment.NewLine + "Please provide proof (an imgur link) of permissions:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
                             while (true)
                             {
-                                if (overwritelink.ToLower().Equals("skip".ToLower()))
+                                if (overwriteLink.ToLower().Equals("skip".ToLower()))
                                 {
                                     mod.IsSkipping = true;
                                     return;
                                 }
-                                if (Uri.IsWellFormedUriString(overwritelink, UriKind.Absolute))
+                                if (Uri.IsWellFormedUriString(overwriteLink, UriKind.Absolute))
                                 {
-                                    if (overwritelink.ToLower().Contains("imgur"))
+                                    if (overwriteLink.ToLower().Contains("imgur"))
                                     {
                                         break;
                                     }
                                 }
-                                overwritelink = Prompt.ShowDialog("Permissions for " + mod.Name + " is unknown" + Environment.NewLine + "Please provide proof(an imgur link) of permissions:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
+                                overwriteLink = Prompt.ShowDialog("Permissions for " + mod.Name + " are unknown" + Environment.NewLine + "Please provide proof (an imgur link) of permissions:" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
                             }
                             while (string.IsNullOrWhiteSpace(modLink))
                             {
@@ -296,43 +296,43 @@ namespace TechnicSolderHelper
                                 }
                                 if (modLink != null && Uri.IsWellFormedUriString(modLink, UriKind.Absolute))
                                 {
-                                    _ownPermsSqLhelper.AddOwnModPerm(mod.Name, mod.Modid, overwritelink, modLink);
+                                    _ownPermsSqLhelper.AddOwnModPerm(mod.Name, mod.modId, overwriteLink, modLink);
                                     break;
 
                                 }
                                 modLink = Prompt.ShowDialog("Please provide a link to " + mod.Name + ":" + Environment.NewLine + "Enter \"skip\" to skip the mod.", mod.Name, true, Prompt.ModsLeftString(_totalMods, _currentMod));
                             }
                             string a = GetAuthors(mod);
-                            _ownPermsSqLhelper.AddOwnModPerm(mod.Name, mod.Modid, overwritelink, modLink);
-                            CreateOwnPermissionInfo(mod.Name, mod.Modid, a, overwritelink, modLink);
+                            _ownPermsSqLhelper.AddOwnModPerm(mod.Name, mod.modId, overwriteLink, modLink);
+                            CreateOwnPermissionInfo(mod.Name, mod.modId, a, overwriteLink, modLink);
 
                         }
-                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.Modid);
+                        ownPermissions = _ownPermsSqLhelper.DoUserHavePermission(mod.modId);
                         customPermissionText = GetAuthors(mod) + " has given permission as seen here: " + ownPermissions.PermissionLink;
                         CreateTechnicPermissionInfo(mod, permissionPolicy, customPermissionText, ownPermissions.ModLink);
                         break;
                 }
             }
             # endregion 
-            if (SolderPack.Checked)
+            if (solderPackRadioButton.Checked)
             {
-                bool force = forcesolder.Checked;
-                bool useSolderBool = useSolder.Checked;
+                bool force = forceSolderUpdateCheckBox.Checked;
+                bool useSolder = useSolderCheckBox.Checked;
                 BackgroundWorker bw = new BackgroundWorker();
                 _runningProcess++;
                 bw.DoWork += (o, arg) =>
                 {
 
                     var modid = mod.GetSafeModId();
-                    string modversion = mod.Mcversion.ToLower() + "-" + mod.Version.ToLower();
-                    if (useSolderBool && !force)
+                    string modVersion = mod.McVersion.ToLower() + "-" + mod.Version.ToLower();
+                    if (useSolder && !force)
                     {
-                        if (_solderSqlHandler.IsModversionOnline(modid, modversion))
+                        if (_solderSqlHandler.IsModVersionOnline(modid, modVersion))
                         {
-                            Debug.WriteLine(modid + " is already online with version " + modversion);
+                            Debug.WriteLine(modid + " is already online with version " + modVersion);
                             int id = _solderSqlHandler.GetModId(modid);
-                            int modVersionId = _solderSqlHandler.GetModversionId(id, modversion);
-                            _solderSqlHandler.AddModversionToBuild(_buildId, modVersionId);
+                            int modVersionId = _solderSqlHandler.GetModVersionId(id, modVersion);
+                            _solderSqlHandler.AddModVersionToBuild(_buildId, modVersionId);
                             _runningProcess--;
                             return;
                         }
@@ -340,19 +340,19 @@ namespace TechnicSolderHelper
 
                     while (true)
                     {
-                        if (_processesUsingModID.ContainsKey(mod.Modid))
+                        if (_processesUsingModID.ContainsKey(mod.modId))
                         {
-                            Debug.WriteLine("Sleeping with id: " + mod.Modid);
+                            Debug.WriteLine("Sleeping with id: " + mod.modId);
                             Thread.Sleep(100);
                         }
                         else
                         {
-                            _processesUsingModID.Add(mod.Modid, 1);
+                            _processesUsingModID.Add(mod.modId, 1);
                             break;
                         }
                     }
-                    
-                    if (!_modsSqLhelper.IsFileInSolder(modfile) || force)
+
+                    if (!_modsSqLhelper.IsFileInSolder(modFilePath) || force)
                     {
                         var modDir = Path.Combine(_outputDirectory, "mods",
                             mod.GetSafeModId(), "mods");
@@ -371,11 +371,11 @@ namespace TechnicSolderHelper
                             tempModFile.Remove(tempModFile.LastIndexOf(Globalfunctions.PathSeperator));
 
                         Directory.CreateDirectory(tempFileDirectory);
-                        File.Copy(modfile, tempModFile, true);
+                        File.Copy(modFilePath, tempModFile, true);
 
                         var modArchive = Path.Combine(_outputDirectory, "mods",
                                 mod.GetSafeModId(),
-                                mod.GetSafeModId() + "-" + mod.Mcversion.ToLower() + "-" + mod.Version.ToLower() + ".zip");
+                                mod.GetSafeModId() + "-" + mod.McVersion.ToLower() + "-" + mod.Version.ToLower() + ".zip");
                         if (Globalfunctions.IsUnix())
                         {
                             Environment.CurrentDirectory = Path.Combine(_outputDirectory, "mods",
@@ -392,24 +392,24 @@ namespace TechnicSolderHelper
                         process.Start();
 
                         //Save mod to database
-                        _modsSqLhelper.AddMod(mod.Name, mod.Modid, mod.Version, mod.Mcversion, fileName, modMd5, true);
+                        _modsSqLhelper.AddMod(mod.Name, mod.modId, mod.Version, mod.McVersion, fileName, modMd5, true);
 
                         // Add mod info to a html file
-                        CreateTableRow(mod.Name.Replace("|", string.Empty), mod.GetSafeModId(), modversion);
+                        CreateTableRow(mod.Name.Replace("|", string.Empty), mod.GetSafeModId(), modVersion);
 
                         process.WaitForExit();
 
-                        if (useSolderBool)
+                        if (useSolder)
                         {
                             int id = -1;
                             string archive = Path.Combine(_outputDirectory, "mods", modArchive);
                             SolderSqlHandler sqh = new SolderSqlHandler();
                             string md5Value = SqlHelper.CalculateMd5(archive).ToLower();
-                            if (sqh.IsModversionOnline(mod.GetSafeModId(), modversion))
+                            if (sqh.IsModVersionOnline(mod.GetSafeModId(), modVersion))
                             {
-                                Debug.WriteLine(string.Format("Updating mod on solder with Modid: {0} modversion: {1} md5value: {2}", modid, modversion, md5Value), doDebug.Checked);
-                                sqh.UpdateModversionMd5(mod.GetSafeModId(), modversion, md5Value);
-								Debug.WriteLine(string.Format("Done updating mod on solder with modid: {0}", modid));
+                                Debug.WriteLine(string.Format("Updating mod on solder with Modid: {0} modversion: {1} md5value: {2}", modid, modVersion, md5Value), doDebugCheckBox.Checked);
+                                sqh.UpdateModVersionMd5(mod.GetSafeModId(), modVersion, md5Value);
+                                Debug.WriteLine(string.Format("Done updating mod on solder with modid: {0}", modid));
                             }
                             else
                             {
@@ -419,26 +419,26 @@ namespace TechnicSolderHelper
                                     sqh.AddModToSolder(mod.GetSafeModId(), mod.Description, GetAuthors(mod), mod.Url,
                                         mod.Name);
                                 }
-                                Debug.WriteLine(string.Format("Adding mod to solder with Modid: {0} modversion: {1} md5value: {2}", modid, modversion, md5Value), doDebug.Checked);
-                                sqh.AddNewModversionToSolder(mod.GetSafeModId(), modversion, md5Value);
+                                Debug.WriteLine(string.Format("Adding mod to solder with Modid: {0} modversion: {1} md5value: {2}", modid, modVersion, md5Value), doDebugCheckBox.Checked);
+                                sqh.AddNewModVersionToSolder(mod.GetSafeModId(), modVersion, md5Value);
                             }
                             id = sqh.GetModId(mod.GetSafeModId());
-                            int modVersionId = sqh.GetModversionId(id, modversion);
-                            sqh.AddModversionToBuild(_buildId, modVersionId);
-							Debug.WriteLine(string.Format("Done addong mod {0} to build", modid));
+                            int modVersionId = sqh.GetModVersionId(id, modVersion);
+                            sqh.AddModVersionToBuild(_buildId, modVersionId);
+                            Debug.WriteLine(string.Format("Done adding mod {0} to build", modid));
                         }
-						Debug.WriteLine("Decrementing " + modDir);
+                        Debug.WriteLine("Decrementing " + modDir);
                         _processesUsingFolder[modDir]--;
-						Debug.WriteLine("Decremented " + modDir);
+                        Debug.WriteLine("Decremented " + modDir);
                         if (Directory.Exists(modDir) && _processesUsingFolder[modDir] == 0)
                         {
                             while (true)
                             {
                                 try
                                 {
-									Debug.WriteLine("Attempting to delete directory " + modDir);
+                                    Debug.WriteLine("Attempting to delete directory " + modDir);
                                     Directory.Delete(modDir, true);
-									Debug.WriteLine("Done deleting directory " + modDir);
+                                    Debug.WriteLine("Done deleting directory " + modDir);
                                     break;
                                 }
                                 catch (IOException e)
@@ -450,30 +450,30 @@ namespace TechnicSolderHelper
                             _processesUsingFolder.Remove(modDir);
                         }
                     }
-                    if (_processesUsingModID.ContainsKey(mod.Modid))
-                        if (_processesUsingModID[mod.Modid] > 1)
+                    if (_processesUsingModID.ContainsKey(mod.modId))
+                        if (_processesUsingModID[mod.modId] > 1)
                         {
-                            _processesUsingModID[mod.Modid]--;
+                            _processesUsingModID[mod.modId]--;
                         }
                         else
                         {
-                            _processesUsingModID.Remove(mod.Modid);
+                            _processesUsingModID.Remove(mod.modId);
                         }
                     _runningProcess--;
-					Debug.WriteLine("Decremented _runningProcess");
+                    Debug.WriteLine("Decremented _runningProcess");
                 };
                 bw.RunWorkerAsync();
             }
             else
             {
-                _modsSqLhelper.AddMod(mod.Name, mod.Modid, mod.Version, mod.Mcversion, fileName, modMd5, false);
+                _modsSqLhelper.AddMod(mod.Name, mod.modId, mod.Version, mod.McVersion, fileName, modMd5, false);
                 while (string.IsNullOrWhiteSpace(_modpackName))
                 {
-                    _modpackName = Prompt.ShowDialog("What is the Modpack Name?", "Modpack Name");
+                    _modpackName = Prompt.ShowDialog("What is the modpack name?", "Modpack Name");
                 }
                 while (string.IsNullOrWhiteSpace(_modpackVersion))
                 {
-                    _modpackVersion = Prompt.ShowDialog("What Version is the modpack?", "Modpack Version");
+                    _modpackVersion = Prompt.ShowDialog("What version is the modpack?", "Modpack Version");
                 }
 
                 string tempDirectory = Path.Combine(_outputDirectory, "tmp");
@@ -485,7 +485,7 @@ namespace TechnicSolderHelper
 
                 string tempFileDirectory = tempFile.Remove(index);
                 Directory.CreateDirectory(tempFileDirectory);
-                File.Copy(modfile, tempFile, true);
+                File.Copy(modFilePath, tempFile, true);
 
                 _modpackArchive = Path.Combine(_outputDirectory, string.Format("{0}-{1}.zip", _modpackName, _modpackVersion));
 
@@ -515,4 +515,3 @@ namespace TechnicSolderHelper
         }
     }
 }
-

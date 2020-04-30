@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Windows.Forms;
 
-namespace TechnicSolderHelper.SQL.forge
+namespace TechnicSolderHelper.SQL.Forge
 {
     partial class ForgeVersionSelector
     {
@@ -31,48 +31,49 @@ namespace TechnicSolderHelper.SQL.forge
         /// </summary>
         private void InitializeComponent()
         {
-            this.label1 = new System.Windows.Forms.Label();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.errorLabel = new System.Windows.Forms.Label();
+            this.forgeVersionDropdown = new System.Windows.Forms.ComboBox();
+            this.confirmButton = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
-            // label1
+            // errorLabel
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(12, 9);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(239, 26);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Selected forge version could not be downloaded.\r\nPlease select a new version.";
+            this.errorLabel.AutoSize = true;
+            this.errorLabel.Location = new System.Drawing.Point(12, 9);
+            this.errorLabel.Name = "errorLabel";
+            this.errorLabel.Size = new System.Drawing.Size(239, 26);
+            this.errorLabel.TabIndex = 0;
+            this.errorLabel.Text = "Selected forge version could not be downloaded.\r\nPlease select a new version.";
             // 
-            // comboBox1
+            // forgeVersionDropdown
             // 
-            this.comboBox1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(66, 38);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 21);
-            this.comboBox1.TabIndex = 1;
+            this.forgeVersionDropdown.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.forgeVersionDropdown.FormattingEnabled = true;
+            this.forgeVersionDropdown.Location = new System.Drawing.Point(66, 38);
+            this.forgeVersionDropdown.Name = "forgeVersionDropdown";
+            this.forgeVersionDropdown.Size = new System.Drawing.Size(121, 21);
+            this.forgeVersionDropdown.TabIndex = 1;
             // 
-            // button1
+            // confirmButton
             // 
-            this.button1.Location = new System.Drawing.Point(66, 66);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(121, 23);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "Confirm";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.confirmButton.Location = new System.Drawing.Point(101, 66);
+            this.confirmButton.Name = "confirmButton";
+            this.confirmButton.Size = new System.Drawing.Size(51, 23);
+            this.confirmButton.TabIndex = 2;
+            this.confirmButton.Text = "Confirm";
+            this.confirmButton.UseVisualStyleBackColor = true;
+            this.confirmButton.Click += new System.EventHandler(this.confirmButton_Click);
             // 
             // ForgeVersionSelector
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(259, 107);
-            this.Controls.Add(this.button1);
-            this.Controls.Add(this.comboBox1);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.confirmButton);
+            this.Controls.Add(this.forgeVersionDropdown);
+            this.Controls.Add(this.errorLabel);
             this.Name = "ForgeVersionSelector";
+            this.ShowIcon = false;
             this.Text = "Forge Version";
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -81,8 +82,8 @@ namespace TechnicSolderHelper.SQL.forge
 
         #endregion
 
-        private Label label1;
-        private ComboBox comboBox1;
-        private Button button1;
+        private Label errorLabel;
+        private ComboBox forgeVersionDropdown;
+        private Button confirmButton;
     }
 }

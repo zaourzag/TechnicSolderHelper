@@ -11,47 +11,47 @@ namespace TechnicSolderHelper.SQL
         {
             InitializeComponent();
             ModListSqlHelper modListSqlHelper = new ModListSqlHelper();
-            data.DataSource = modListSqlHelper.GetTableInfoForEditing();
-            if (data.Columns["ID"] != null)
+            dataGridView.DataSource = modListSqlHelper.GetTableInfoForEditing();
+            if (dataGridView.Columns["ID"] != null)
             {
-                data.Columns["ID"].Visible = false;
+                dataGridView.Columns["ID"].Visible = false;
             }
         }
 
-        private void Save_Click(object sender, EventArgs e)
+        private void saveButton_Click(object sender, EventArgs e)
         {
             ModListSqlHelper modListSqlHelper = new ModListSqlHelper();
-            modListSqlHelper.SetTableInfoAfterEditing(data.DataSource as DataTable);
+            modListSqlHelper.SetTableInfoAfterEditing(dataGridView.DataSource as DataTable);
         }
 
-        private void Cancel_Click(object sender, EventArgs e)
+        private void cancelButton_Click(object sender, EventArgs e)
         {
             Close();
         }
 
-        private void SaveAndExit_Click(object sender, EventArgs e)
+        private void saveAndExitButton_Click(object sender, EventArgs e)
         {
-            Save_Click(null, null);
+            saveButton_Click(null, null);
             Close();
         }
 
-        private void data_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void dataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
         }
 
-        private void highLightVerBtn_Click(object sender, EventArgs e)
+        private void highlightVersionsButton_Click(object sender, EventArgs e)
         {
-            var dataGridViewColumn = data.Columns["ModVersion"];
+            var dataGridViewColumn = dataGridView.Columns["ModVersion"];
             if (dataGridViewColumn == null) return;
             int modVersionIndex = dataGridViewColumn.Index;
-            var gridViewColumn = data.Columns["MinecraftVersion"];
+            var gridViewColumn = dataGridView.Columns["MinecraftVersion"];
             if (gridViewColumn == null) return;
             int minecraftVersionIndex = gridViewColumn.Index;
-            foreach (DataGridViewRow row in data.Rows)
+            foreach (DataGridViewRow row in dataGridView.Rows)
             {
                 //Here 2 cell is target value and 1 cell is Volume
-                data.Rows[row.Index].Cells[modVersionIndex].Style.BackColor = row.Cells[modVersionIndex].Value.ToString().Contains(row.Cells[minecraftVersionIndex].Value.ToString()) ? Color.Red : Color.White;
+                dataGridView.Rows[row.Index].Cells[modVersionIndex].Style.BackColor = row.Cells[modVersionIndex].Value.ToString().Contains(row.Cells[minecraftVersionIndex].Value.ToString()) ? Color.Red : Color.White;
             }
         }
     }
