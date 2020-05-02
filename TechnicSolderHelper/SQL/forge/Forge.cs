@@ -1,10 +1,12 @@
 ﻿using Mono.Data.Sqlite;
 using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Data.SQLite;
 using System.IO;
 using System.Net.Http;
 using System.Text;
+using System.Windows.Forms;
 
 namespace TechnicSolderHelper.SQL.Forge
 {
@@ -225,8 +227,19 @@ namespace TechnicSolderHelper.SQL.Forge
             List<string> downloadUrls = new List<string>();
             ForgeMaven forgeMaven;
             HttpClient client = new HttpClient();
-            using (Stream s = client.GetStreamAsync("http://files.minecraftforge.net/maven/net/minecraftforge/forge/json").Result)
-            using (StreamReader sr = new StreamReader(s))
+            Stream stream;
+            try
+            {
+                stream = client.GetStreamAsync("http://files.minecraftforge.net/maven/net/minecraftforge/forge/json")
+                    .Result;
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show("Error getting Forge versions.");
+                return;
+            }
+
+            using (StreamReader sr = new StreamReader(stream))
             using (JsonReader reader = new JsonTextReader(sr))
             {
                 JsonSerializer serializer = new JsonSerializer();
@@ -278,7 +291,6 @@ namespace TechnicSolderHelper.SQL.Forge
 
             }
             AddVersions(builds, mcVersions, versions, types, downloadUrls);
-
         }
 
     }
