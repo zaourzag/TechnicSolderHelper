@@ -15,7 +15,7 @@ namespace TechnicSolderHelper.AmazonS3
             InitializeComponent();
         }
 
-        private bool testButton_Click(object sender = null, EventArgs e = null)
+        private void testButton_Click(object sender = null, EventArgs e = null)
         {
             FillEmptyUrl();
             if (!(serviceUrlTextBox.Text.StartsWith("http://") || serviceUrlTextBox.Text.StartsWith("https://")))
@@ -27,7 +27,7 @@ namespace TechnicSolderHelper.AmazonS3
                 if (!Uri.IsWellFormedUriString(serviceUrlTextBox.Text, UriKind.Absolute))
                 {
                     MessageBox.Show("Service URL is not valid");
-                    return false;
+                    return;// false;
                 }
 
                 _service = new S3(accessKeyTextBox.Text, secretKeyTextBox.Text, serviceUrlTextBox.Text);
@@ -40,7 +40,7 @@ namespace TechnicSolderHelper.AmazonS3
                         MessageBox.Show("Connection successful.");
                     }
 
-                    return true;
+                    //return true;
                 }
                 catch (Exception exception)
                 {
@@ -52,7 +52,7 @@ namespace TechnicSolderHelper.AmazonS3
                 MessageBox.Show("Please fill in everything.");
             }
 
-            return false;
+            //return false;
         }
 
         private void cancelButton_Click(object sender, EventArgs e)
