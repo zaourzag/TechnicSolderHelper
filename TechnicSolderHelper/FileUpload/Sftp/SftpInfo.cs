@@ -81,6 +81,11 @@ namespace TechnicSolderHelper.FileUpload.Sftp
             {
             }
         }
+
+        private void cancelButton_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
     }
 }
 
