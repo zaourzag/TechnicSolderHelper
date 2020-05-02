@@ -380,8 +380,6 @@ namespace TechnicSolderHelper
                 File.WriteAllText(_path, htmlfile);
             }
 
-            Debug.AssignCheckbox(doDebugCheckBox);
-
             return false;
         }
 
@@ -1106,7 +1104,7 @@ namespace TechnicSolderHelper
                     }
                     Debug.WriteLine(sb.ToString());
                 }
-                Debug.Save();
+                Debug.Flush();
                 Thread.Sleep(100);
             }
             toolStripStatusLabel.Text = "Saving mod data";
@@ -1937,6 +1935,18 @@ namespace TechnicSolderHelper
                 return;
             }
 
+        }
+
+        private void doDebugCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (doDebugCheckBox.Checked)
+            {
+                Debug.WriteLine("Started debug output.");
+            }
+            else
+            {
+                Debug.WriteLine("Stopped debug output.", true);
+            }
         }
 
         private void SolderHelper_Load(object sender, EventArgs e)

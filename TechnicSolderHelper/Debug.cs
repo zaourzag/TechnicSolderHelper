@@ -18,24 +18,25 @@ namespace TechnicSolderHelper
             _box = checkBox;
         }
 
-        public static void WriteLine(string text, bool condition = false)
+        public static void WriteLine(string text, bool forceWriteToFile = false)
         {
             System.Diagnostics.Debug.WriteLine(text);
-            if (condition || _box != null && _box.Checked)
+            if (forceWriteToFile || _box != null && _box.Checked)
             {
                 sb.AppendLine(text);
+                Save();
             }
         }
 
-        public static void WriteLine(object o, bool condition = false)
+        public static void WriteLine(object o, bool forceWriteToFile = false)
         {
             try
             {
-                WriteLine(o.ToString(), condition);
+                WriteLine(o.ToString(), forceWriteToFile);
             }
             catch (Exception)
             {
-                // Ignored
+                WriteLine("Error writing object of type " + o.GetType().FullName + " to debug output.");
             }
         }
 
@@ -44,6 +45,12 @@ namespace TechnicSolderHelper
             if (!string.IsNullOrWhiteSpace(sb.ToString()))
                 File.AppendAllText(Output, sb.ToString());
             sb.Clear();
+        }
+
+        public static void Flush()
+        {
+            System.Diagnostics.Debug.Flush();
+            Save();
         }
     }
 }

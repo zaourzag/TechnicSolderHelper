@@ -724,7 +724,10 @@ namespace TechnicSolderHelper
             this.doDebugCheckBox.Size = new System.Drawing.Size(121, 17);
             this.doDebugCheckBox.TabIndex = 41;
             this.doDebugCheckBox.Text = "Enable debug mode";
+            this.toolTips.SetToolTip(this.doDebugCheckBox, "Outputs debug info to a file on your desktop called \"DebugFromModpackHelper.txt\"");
             this.doDebugCheckBox.UseVisualStyleBackColor = true;
+            this.doDebugCheckBox.CheckedChanged += new System.EventHandler(this.doDebugCheckBox_CheckedChanged);
+            Debug.AssignCheckbox(doDebugCheckBox);
             // 
             // SolderHelper
             // 
