@@ -319,7 +319,7 @@ namespace TechnicSolderHelper
             this.additionalFoldersGroupBox.Controls.Add(this.additionalFoldersPanel);
             this.additionalFoldersGroupBox.Location = new System.Drawing.Point(636, 25);
             this.additionalFoldersGroupBox.Name = "additionalFoldersGroupBox";
-            this.additionalFoldersGroupBox.Size = new System.Drawing.Size(136, 427);
+            this.additionalFoldersGroupBox.Size = new System.Drawing.Size(153, 427);
             this.additionalFoldersGroupBox.TabIndex = 23;
             this.additionalFoldersGroupBox.TabStop = false;
             this.additionalFoldersGroupBox.Text = "Additional folders";
@@ -328,10 +328,9 @@ namespace TechnicSolderHelper
             // additionalFoldersPanel
             // 
             this.additionalFoldersPanel.AutoScroll = true;
-            this.additionalFoldersPanel.AutoSize = true;
-            this.additionalFoldersPanel.Location = new System.Drawing.Point(0, 13);
+            this.additionalFoldersPanel.Location = new System.Drawing.Point(2, 19);
             this.additionalFoldersPanel.Name = "additionalFoldersPanel";
-            this.additionalFoldersPanel.Size = new System.Drawing.Size(136, 414);
+            this.additionalFoldersPanel.Size = new System.Drawing.Size(149, 405);
             this.additionalFoldersPanel.TabIndex = 0;
             // 
             // configureFtpButton
@@ -603,8 +602,8 @@ namespace TechnicSolderHelper
             this.toolStripStatusLabel});
             this.statusStrip.Location = new System.Drawing.Point(0, 462);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(784, 22);
-            this.statusStrip.TabIndex = 34;
+            this.statusStrip.Size = new System.Drawing.Size(801, 22);
+            this.statusStrip.TabIndex = 35;
             this.statusStrip.Text = "statusStrip1";
             // 
             // toolStripProgressBar
@@ -630,7 +629,7 @@ namespace TechnicSolderHelper
             this.generatePermissionsButton.Location = new System.Drawing.Point(333, 414);
             this.generatePermissionsButton.Name = "generatePermissionsButton";
             this.generatePermissionsButton.Size = new System.Drawing.Size(90, 37);
-            this.generatePermissionsButton.TabIndex = 35;
+            this.generatePermissionsButton.TabIndex = 34;
             this.generatePermissionsButton.Text = "Generate Permissions";
             this.toolTips.SetToolTip(this.generatePermissionsButton, "Generate a text file with all current permission info for the selected location.");
             this.generatePermissionsButton.UseVisualStyleBackColor = true;
@@ -731,7 +730,8 @@ namespace TechnicSolderHelper
             // 
             this.AcceptButton = this.goButton;
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.None;
-            this.ClientSize = new System.Drawing.Size(784, 484);
+            this.ClientSize = new System.Drawing.Size(801, 484);
+            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.configureSftpButton);
             this.Controls.Add(this.uploadToSFTPCheckBox);
             this.Controls.Add(this.doDebugCheckBox);
@@ -741,7 +741,6 @@ namespace TechnicSolderHelper
             this.Controls.Add(this.minimumJavaVersionDropdown);
             this.Controls.Add(this.minimumMemoryTextBox);
             this.Controls.Add(this.generatePermissionsButton);
-            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.forgeVersionDropdown);
             this.Controls.Add(this.mcVersionDropdown);
             this.Controls.Add(this.editModDataButton);
@@ -784,7 +783,6 @@ namespace TechnicSolderHelper
             this.Load += new System.EventHandler(this.SolderHelper_Load);
             this.Resize += new System.EventHandler(this.form_resize);
             this.additionalFoldersGroupBox.ResumeLayout(false);
-            this.additionalFoldersGroupBox.PerformLayout();
             this.technicDistributionLevelGroupBox.ResumeLayout(false);
             this.technicDistributionLevelGroupBox.PerformLayout();
             this.ftbDistributionLevelGroupBox.ResumeLayout(false);
@@ -930,7 +928,7 @@ namespace TechnicSolderHelper
                 createFTBPackCheckBox.Checked = false;
             }
 
-            Boolean createSolderHelper = true, createPrivateFtbPack = true, technicPrivatePermissionsLevel = true, includeForgeVersion = false, createTechnicConfigZip = true, checkTecnicPermissions = false, uploadToFTPServer = false, uses3 = false, createFtbPack = false, missingInfoAction = true;
+            Boolean createSolderHelper = true, createPrivateFtbPack = true, technicPrivatePermissionsLevel = true, includeForgeVersion = false, createTechnicConfigZip = true, checkTechnicPermissions = false, uploadToFTPServer = false, uses3 = false, createFtbPack = false, missingInfoAction = true;
             try
             {
                 useSolderCheckBox.Checked = Convert.ToBoolean(_confighandler.GetConfig("useSolder"));
@@ -1002,7 +1000,7 @@ namespace TechnicSolderHelper
             }
             try
             {
-                checkTecnicPermissions = Convert.ToBoolean(_confighandler.GetConfig("CheckTecnicPermissions"));
+                checkTechnicPermissions = Convert.ToBoolean(_confighandler.GetConfig("CheckTechnicPermissions"));
             }
             catch (Exception)
             {
@@ -1091,8 +1089,8 @@ namespace TechnicSolderHelper
                 forgeVersionDropdown.Hide();
             }
             includeConfigZipCheckBox.Checked = createTechnicConfigZip;
-            checkTechnicPermissionsCheckBox.Checked = checkTecnicPermissions;
-            if (checkTecnicPermissions && createTechnicPackCheckBox.Checked)
+            checkTechnicPermissionsCheckBox.Checked = checkTechnicPermissions;
+            if (checkTechnicPermissions && createTechnicPackCheckBox.Checked)
             {
                 technicDistributionLevelGroupBox.Visible = true;
             }

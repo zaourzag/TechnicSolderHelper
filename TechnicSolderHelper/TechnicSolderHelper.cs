@@ -1622,21 +1622,19 @@ namespace TechnicSolderHelper
                 return;
             List<string> dirs = Directory.GetDirectories(superDirectory).Where(dir => !dir.EndsWith("mods") && !dir.EndsWith("config")).ToList();
             _additionalDirectories.Clear();
-            int c = 0;
-            for (int i = 23; i < dirs.Count * 23 + 23; i += 23)
+            for (int i = 0; i < dirs.Count; i ++)
             {
-                if (!_additionalDirectories.ContainsKey(dirs[c]))
+                if (!_additionalDirectories.ContainsKey(dirs[i]))
                 {
-                    string dirname = dirs[c].Substring(dirs[c].LastIndexOf(Globalfunctions.PathSeperator) + 1);
-                    _additionalDirectories.Add(dirs[c], new CheckBox
+                    string dirname = dirs[i].Substring(dirs[i].LastIndexOf(Globalfunctions.PathSeperator) + 1);
+                    _additionalDirectories.Add(dirs[i], new CheckBox
                     {
-                        Left = 20,
-                        Top = i,
+                        Left = 10,
+                        Top = i * 22,
                         Height = 20,
                         Text = dirname
                     });
                 }
-                c++;
             }
 
 
@@ -1645,16 +1643,16 @@ namespace TechnicSolderHelper
             {
                 _additionalDirectories.Add(serversDat, new CheckBox
                 {
-                    Left = 20,
-                    Top = c * 23 + 23,
+                    Left = 10,
+                    Top = dirs.Count * 22,
                     Height = 20,
                     Text = @"Servers.dat file"
                 });
             }
-            additionalFoldersGroupBox.Controls.Clear();
-            foreach (CheckBox cb in _additionalDirectories.Values)
+            additionalFoldersPanel.Controls.Clear();
+            foreach (CheckBox checkBox in _additionalDirectories.Values)
             {
-                additionalFoldersGroupBox.Controls.Add(cb);
+                additionalFoldersPanel.Controls.Add(checkBox);
             }
         }
 
@@ -1753,18 +1751,18 @@ namespace TechnicSolderHelper
             if (solderPackRadioButton.Checked)
             {
                 includeForgeZipCheckBox.Text = "Create Forge zip";
-                includeConfigZipCheckBox.Text = "Create Config zip";
+                includeConfigZipCheckBox.Text = "Create config zip";
             }
             else
             {
                 includeForgeZipCheckBox.Text = "Include Forge in zip";
-                includeConfigZipCheckBox.Text = "Include Configs in zip";
+                includeConfigZipCheckBox.Text = "Include configs in zip";
             }
         }
 
         private void checkTechnicPermissionsCheckBox_CheckedChanged(object sender, EventArgs e)
         {
-            _confighandler.SetConfig("CheckTecnicPermissions", checkTechnicPermissionsCheckBox.Checked);
+            _confighandler.SetConfig("CheckTechnicPermissions", checkTechnicPermissionsCheckBox.Checked);
 
             if (checkTechnicPermissionsCheckBox.Checked)
                 technicDistributionLevelGroupBox.Show();
