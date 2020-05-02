@@ -15,8 +15,9 @@ namespace TechnicSolderHelper.AmazonS3
             InitializeComponent();
         }
 
-        private void test_Click(object sender, EventArgs e)
+        private bool testButton_Click(object sender = null, EventArgs e = null)
         {
+            FillEmptyUrl();
             if (!(serviceUrlTextBox.Text.StartsWith("http://") || serviceUrlTextBox.Text.StartsWith("https://")))
             {
                 serviceUrlTextBox.Text = "http://" + serviceUrlTextBox.Text;
@@ -25,42 +26,7 @@ namespace TechnicSolderHelper.AmazonS3
             {
                 if (!Uri.IsWellFormedUriString(serviceUrlTextBox.Text, UriKind.Absolute))
                 {
-                    MessageBox.Show("Service url is not valid");
-                    return;
-                }
-
-                _service = new S3(accessKeyTextBox.Text, secretKeyTextBox.Text, serviceUrlTextBox.Text);
-                try
-                {
-                    _service.GetBucketList();
-                    if (sender != null)
-                    {
-                        MessageBox.Show("Connection Succesful.");
-                    }
-                }
-                catch (Exception exception)
-                {
-                    MessageBox.Show(string.Format("Connection not succesful.\n{0}", exception.Message));
-                }
-                GetBuckets();
-            }
-            else
-            {
-                MessageBox.Show("Please fill in everything.");
-            }
-        }
-
-        private bool test_Click()
-        {
-            if (!(serviceUrlTextBox.Text.StartsWith("http://") || serviceUrlTextBox.Text.StartsWith("https://")))
-            {
-                serviceUrlTextBox.Text = "http://" + serviceUrlTextBox.Text;
-            }
-            if (IsEveryFilledIn())
-            {
-                if (!Uri.IsWellFormedUriString(serviceUrlTextBox.Text, UriKind.Absolute))
-                {
-                    MessageBox.Show("Service url is not valid");
+                    MessageBox.Show("Service URL is not valid");
                     return false;
                 }
 
@@ -69,18 +35,23 @@ namespace TechnicSolderHelper.AmazonS3
                 {
                     _service.GetBucketList();
                     GetBuckets();
+                    if (sender != null)
+                    {
+                        MessageBox.Show("Connection successful.");
+                    }
+
                     return true;
                 }
                 catch (Exception exception)
                 {
-                    MessageBox.Show(string.Format("Connection not succesful.\n{0}", exception.Message));
+                    MessageBox.Show(string.Format("Connection not successful.\n{0}", exception.Message));
                 }
-
             }
             else
             {
                 MessageBox.Show("Please fill in everything.");
             }
+
             return false;
         }
 
@@ -102,13 +73,20 @@ namespace TechnicSolderHelper.AmazonS3
             }
         }
 
+        private void FillEmptyUrl()
+        {
+            if (string.IsNullOrWhiteSpace(serviceUrlTextBox.Text))
+            {
+                serviceUrlTextBox.Text = @"http://s3.amazonaws.com/";
+            }
+        }
+
         private bool IsEveryFilledIn()
         {
-            if (string.IsNullOrWhiteSpace(accessKeyTextBox.Text) || string.IsNullOrWhiteSpace(serviceUrlTextBox.Text) || string.IsNullOrWhiteSpace(secretKeyTextBox.Text))
-            {
-                return false;
-            }
-            return true;
+            FillEmptyUrl();
+            return !(string.IsNullOrWhiteSpace(accessKeyTextBox.Text) ||
+                     string.IsNullOrWhiteSpace(serviceUrlTextBox.Text) ||
+                     string.IsNullOrWhiteSpace(secretKeyTextBox.Text));
         }
 
         private void Save_Click(object sender, EventArgs e)
@@ -155,18 +133,18 @@ namespace TechnicSolderHelper.AmazonS3
             {
                 if (string.IsNullOrWhiteSpace(newBucketNameTextBox.Text))
                 {
-                    MessageBox.Show("You need to enter a name of the new bucket.");
+                    MessageBox.Show("You need to enter a name for the new bucket.");
                 }
                 else
                 {
                     _service.CreateNewBucket(newBucketNameTextBox.Text);
-                    test_Click();
+                    testButton_Click();
                     bucketsListBox.SelectedItem = newBucketNameTextBox.Text;
                 }
             }
             else
             {
-                test_Click();
+                testButton_Click();
             }
         }
     }

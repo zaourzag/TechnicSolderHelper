@@ -113,7 +113,7 @@ namespace TechnicSolderHelper.AmazonS3
             this.testButton.TabIndex = 4;
             this.testButton.Text = "Test";
             this.testButton.UseVisualStyleBackColor = true;
-            this.testButton.Click += new System.EventHandler(this.test_Click);
+            this.testButton.Click += new System.EventHandler(this.testButton_Click);
             // 
             // cancelButton
             // 

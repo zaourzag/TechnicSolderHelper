@@ -24,15 +24,15 @@ namespace TechnicSolderHelper.AmazonS3
             Crypto crypto = new Crypto();
             var accessKey = crypto.DecryptString(ch.GetConfig("S3accessKey"));
             var secretKey = crypto.DecryptString(ch.GetConfig("S3secretKey"));
-            string url = ch.GetConfig("S3url");
+            string serviceUrl = ch.GetConfig("S3url");
             _bucket = ch.GetConfig("S3Bucket");
-            var config = new AmazonS3Config { ServiceURL = url };
+            var config = new AmazonS3Config() { ServiceURL = serviceUrl, Timeout = TimeSpan.FromSeconds(15), ReadWriteTimeout = TimeSpan.FromSeconds(15) };
             _client = AWSClientFactory.CreateAmazonS3Client(accessKey, secretKey, config) as AmazonS3Client;
         }
 
         public S3(string accessKey, string secretKey, string serviceUrl)
         {
-            var config = new AmazonS3Config() { ServiceURL = serviceUrl };
+            var config = new AmazonS3Config() { ServiceURL = serviceUrl, Timeout = TimeSpan.FromSeconds(15), ReadWriteTimeout = TimeSpan.FromSeconds(15) };
             _client = AWSClientFactory.CreateAmazonS3Client(accessKey, secretKey, config) as AmazonS3Client;
         }
 
@@ -78,7 +78,7 @@ namespace TechnicSolderHelper.AmazonS3
             };
             TransferUtility directoryTransferUtility = new TransferUtility(_client);
             directoryTransferUtility.UploadDirectory(request);
-            MessageBox.Show("Done uploading files to s3");
+            MessageBox.Show("Done uploading files to S3");
         }
     }
 }
