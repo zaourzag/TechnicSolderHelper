@@ -20,10 +20,13 @@ namespace TechnicSolderHelper
 
         public static void WriteLine(string text, bool forceWriteToFile = false)
         {
-            System.Diagnostics.Debug.WriteLine(text);
+            string timestamp = DateTime.Now.ToString(@"[HH:mm:ss]\: ");
+
+            System.Diagnostics.Debug.WriteLine(timestamp + text);
+
             if (forceWriteToFile || _box != null && _box.Checked)
             {
-                sb.AppendLine(text);
+                sb.AppendLine(timestamp + text);
                 Save();
             }
         }
