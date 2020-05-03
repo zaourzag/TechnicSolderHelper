@@ -51,7 +51,7 @@ namespace TechnicSolderHelper.FileUpload
                 }
                 else
                 {
-                    MessageBox.Show("Hostname is not valid");
+                    MessageBox.Show("Invalid hostname");
                 }
 
             }
@@ -80,9 +80,9 @@ namespace TechnicSolderHelper.FileUpload
                 }
                 catch (WebException ex)
                 {
-                    return ex.Message + " --> " + ((FtpWebResponse)ex.Response).StatusDescription; ;
+                    return ex.Message + " --> " + ((FtpWebResponse)ex.Response).StatusDescription;
                 }
-                return "All is working fine!!";
+                return "All is working fine!";
             }
             return "Invalid hostname";
         }

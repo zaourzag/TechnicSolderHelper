@@ -291,7 +291,7 @@
     <Compile Include="SQL\SqlHelper.cs" />
     <Compile Include="GlobalFunctions.cs" />
     <Compile Include="SQL\forge\Forge.cs" />
-    <Compile Include="SQL\forge\ForgeMaven.cs" />
+    <Compile Include="SQL\forge\ForgeJson.cs" />
     <Compile Include="AsyncOperations.cs" />
     <Compile Include="ModPacks.cs" />
     <Compile Include="FileUpload\Ftp\FtpInfo.cs">

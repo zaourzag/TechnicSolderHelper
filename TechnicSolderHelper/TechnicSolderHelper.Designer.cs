@@ -95,9 +95,9 @@ namespace TechnicSolderHelper
             this.forceSolderUpdateCheckBox = new System.Windows.Forms.CheckBox();
             this.configureSftpButton = new System.Windows.Forms.Button();
             this.uploadToSFTPCheckBox = new System.Windows.Forms.CheckBox();
+            this.doDebugCheckBox = new System.Windows.Forms.CheckBox();
             this.minimumJavaVersionLabel = new System.Windows.Forms.Label();
             this.minimumMemoryLabel = new System.Windows.Forms.Label();
-            this.doDebugCheckBox = new System.Windows.Forms.CheckBox();
             this.additionalFoldersGroupBox.SuspendLayout();
             this.technicDistributionLevelGroupBox.SuspendLayout();
             this.ftbDistributionLevelGroupBox.SuspendLayout();
@@ -163,11 +163,11 @@ namespace TechnicSolderHelper
             // 
             // resetDatabaseButton
             // 
-            this.resetDatabaseButton.Location = new System.Drawing.Point(510, 429);
+            this.resetDatabaseButton.Location = new System.Drawing.Point(497, 429);
             this.resetDatabaseButton.Name = "resetDatabaseButton";
-            this.resetDatabaseButton.Size = new System.Drawing.Size(119, 23);
+            this.resetDatabaseButton.Size = new System.Drawing.Size(132, 23);
             this.resetDatabaseButton.TabIndex = 3;
-            this.resetDatabaseButton.Text = "Reset database";
+            this.resetDatabaseButton.Text = "Reset internal database";
             this.resetDatabaseButton.UseVisualStyleBackColor = true;
             this.resetDatabaseButton.Click += new System.EventHandler(this.resetDatabaseButton_Click);
             // 
@@ -192,7 +192,7 @@ namespace TechnicSolderHelper
             this.updateStoredFTBPermissionsButton.Name = "updateStoredFTBPermissionsButton";
             this.updateStoredFTBPermissionsButton.Size = new System.Drawing.Size(119, 47);
             this.updateStoredFTBPermissionsButton.TabIndex = 6;
-            this.updateStoredFTBPermissionsButton.Text = "Update Stored FTB permissions";
+            this.updateStoredFTBPermissionsButton.Text = "Update stored FTB permissions";
             this.toolTips.SetToolTip(this.updateStoredFTBPermissionsButton, "Update the stored information about mod permissions. WARNING: This will take a lo" +
         "ng time, during which Modpack Helper will be unable to pack your mods.");
             this.updateStoredFTBPermissionsButton.UseVisualStyleBackColor = true;
@@ -305,7 +305,7 @@ namespace TechnicSolderHelper
             // 
             // getLiteLoaderVersionsButton
             // 
-            this.getLiteLoaderVersionsButton.Location = new System.Drawing.Point(429, 400);
+            this.getLiteLoaderVersionsButton.Location = new System.Drawing.Point(429, 376);
             this.getLiteLoaderVersionsButton.Name = "getLiteLoaderVersionsButton";
             this.getLiteLoaderVersionsButton.Size = new System.Drawing.Size(75, 52);
             this.getLiteLoaderVersionsButton.TabIndex = 21;
@@ -698,6 +698,18 @@ namespace TechnicSolderHelper
             this.uploadToSFTPCheckBox.UseVisualStyleBackColor = true;
             this.uploadToSFTPCheckBox.CheckedChanged += new System.EventHandler(this.uploadToSFTPCheckBox_CheckedChanged);
             // 
+            // doDebugCheckBox
+            // 
+            this.doDebugCheckBox.AutoSize = true;
+            this.doDebugCheckBox.Location = new System.Drawing.Point(348, 104);
+            this.doDebugCheckBox.Name = "doDebugCheckBox";
+            this.doDebugCheckBox.Size = new System.Drawing.Size(121, 17);
+            this.doDebugCheckBox.TabIndex = 41;
+            this.doDebugCheckBox.Text = "Enable debug mode";
+            this.toolTips.SetToolTip(this.doDebugCheckBox, "Outputs debug info to a file on your desktop called \"DebugFromModpackHelper.txt\"");
+            this.doDebugCheckBox.UseVisualStyleBackColor = true;
+            this.doDebugCheckBox.CheckedChanged += new System.EventHandler(this.doDebugCheckBox_CheckedChanged);
+            // 
             // minimumJavaVersionLabel
             // 
             this.minimumJavaVersionLabel.AutoSize = true;
@@ -715,19 +727,6 @@ namespace TechnicSolderHelper
             this.minimumMemoryLabel.Size = new System.Drawing.Size(123, 13);
             this.minimumMemoryLabel.TabIndex = 39;
             this.minimumMemoryLabel.Text = "Minimum memory (in MB)";
-            // 
-            // doDebugCheckBox
-            // 
-            this.doDebugCheckBox.AutoSize = true;
-            this.doDebugCheckBox.Location = new System.Drawing.Point(348, 104);
-            this.doDebugCheckBox.Name = "doDebugCheckBox";
-            this.doDebugCheckBox.Size = new System.Drawing.Size(121, 17);
-            this.doDebugCheckBox.TabIndex = 41;
-            this.doDebugCheckBox.Text = "Enable debug mode";
-            this.toolTips.SetToolTip(this.doDebugCheckBox, "Outputs debug info to a file on your desktop called \"DebugFromModpackHelper.txt\"");
-            this.doDebugCheckBox.UseVisualStyleBackColor = true;
-            this.doDebugCheckBox.CheckedChanged += new System.EventHandler(this.doDebugCheckBox_CheckedChanged);
-            Debug.AssignCheckbox(doDebugCheckBox);
             // 
             // SolderHelper
             // 
@@ -1081,7 +1080,7 @@ namespace TechnicSolderHelper
                 configureFtpButton.Hide();
             }
             includeForgeZipCheckBox.Checked = includeForgeVersion;
-            if (includeForgeVersion)
+            if (createTechnicPackCheckBox.Checked && includeForgeVersion)
             {
                 forgeVersionLabel.Show();
                 forgeVersionDropdown.Show();
@@ -1115,12 +1114,6 @@ namespace TechnicSolderHelper
             List<String> minecraftversions = _forgeSqlHelper.GetMcVersions();
             foreach (String mcversion in minecraftversions)
                 mcVersionDropdown.Items.Add(mcversion);
-
-            if (!createTechnicPackCheckBox.Checked)
-            {
-                forgeVersionDropdown.Hide();
-                forgeVersionLabel.Hide();
-            }
 
             #endregion
 

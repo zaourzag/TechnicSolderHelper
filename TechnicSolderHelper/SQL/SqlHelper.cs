@@ -74,15 +74,16 @@ namespace TechnicSolderHelper.SQL
                         }
                     }
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
-                    // ignored
+                    Debug.WriteLine("Error executing query on internal database (async=" + async + "): " + sql);
+                    Debug.WriteLine(e);
                 }
             }
             else
             {
-                /*try
-                {*/
+                try
+                {
                     using (SQLiteConnection db = new SQLiteConnection(ConnectionString))
                     {
                         db.Open();
@@ -98,11 +99,12 @@ namespace TechnicSolderHelper.SQL
                             }
                         }
                     }
-                /*}
-                catch (Exception)
+                }
+                catch (Exception e)
                 {
-                    // ignored
-                }*/
+                    Debug.WriteLine("Error executing query on internal database (async=" + async + "): " + sql);
+                    Debug.WriteLine(e);
+                }
             }
         }
 
@@ -110,6 +112,57 @@ namespace TechnicSolderHelper.SQL
         {
             string sql = string.Format("DROP TABLE {0};", TableName);
             ExecuteDatabaseQuery(sql);
+        }
+
+
+
+        // This method will check if column exists in your table
+        public bool DoesFieldExist(String fieldName)
+        {
+            bool doesFieldExist = false;
+            string sql = "PRAGMA table_info(" + TableName + ")";
+            if (IsUnix())
+            {
+                using (SqliteConnection db = new SqliteConnection(ConnectionString))
+                {
+                    db.Open();
+                    using (SqliteCommand cmd = new SqliteCommand(sql, db))
+                    {
+                        using (SqliteDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read() && !doesFieldExist)
+                            {
+                                if (reader["name"].ToString().Equals(fieldName))
+                                {
+                                    doesFieldExist = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                using (SQLiteConnection db = new SQLiteConnection(ConnectionString))
+                {
+                    db.Open();
+                    using (SQLiteCommand cmd = new SQLiteCommand(sql, db))
+                    {
+                        using (SQLiteDataReader reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read() && !doesFieldExist)
+                            {
+                                if (reader["name"].ToString().Equals(fieldName))
+                                {
+                                    doesFieldExist = true;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            return doesFieldExist;
         }
 
         private static Dictionary<string, string> md5Cache = new Dictionary<string, string>();

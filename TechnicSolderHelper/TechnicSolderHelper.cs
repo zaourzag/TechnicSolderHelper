@@ -49,7 +49,6 @@ namespace TechnicSolderHelper
         private Ftp _ftp;
         private readonly List<string> _inputDirectories = new List<string>();
         private int _buildId, _modpackId;
-        //private bool UpdatingForge, updatingPermissions;
         private bool _updatingForge;
         private bool _updatingPermissions;
         private bool _uploadingToFtp, _uploadingToS3, _uploadingToSftp;
@@ -263,7 +262,7 @@ namespace TechnicSolderHelper
                     }
                     catch (Exception)
                     {
-                        MessageBox.Show("Unable to clear Solder directory." + Environment.NewLine + "Please restart the process when the directory is no longer in use.");
+                        MessageBox.Show("Unable to clear output directory." + Environment.NewLine + "Please restart the process when the directory is no longer in use.");
                         return true;
                     }
                 }
@@ -1237,7 +1236,7 @@ namespace TechnicSolderHelper
             worker.DoWork += (sender, args) =>
             {
                 _runningProcess++;
-                Number forgeInfo = _forgeSqlHelper.GetForgeInfo(forgeVersion);
+                ForgeVersionInfo forgeInfo = _forgeSqlHelper.GetForgeInfo(forgeVersion);
                 bool skip = false;
                 if (uploadToSolder)
                 {
@@ -1670,8 +1669,8 @@ namespace TechnicSolderHelper
             bw.DoWork += (s, args) =>
             {
                 UpdatingPermissions = true;
-                FtbPermissionsSqlHelper f = new FtbPermissionsSqlHelper();
-                f.LoadOnlinePermissions();
+                FtbPermissionsSqlHelper ftbPermissionsSqlHelper = new FtbPermissionsSqlHelper();
+                ftbPermissionsSqlHelper.LoadOnlinePermissions();
             };
             bw.RunWorkerCompleted += (s, a) =>
             {
@@ -1817,7 +1816,7 @@ namespace TechnicSolderHelper
         {
             forgeVersionDropdown.Items.Clear();
             string selectedMcVersion = mcVersionDropdown.SelectedItem.ToString();
-            List<string> forgeVersions = _forgeSqlHelper.GetForgeVersions(selectedMcVersion);
+            List<string> forgeVersions = _forgeSqlHelper.GetForgeBuilds(selectedMcVersion);
 
             foreach (string build in forgeVersions)
                 forgeVersionDropdown.Items.Add(build);
@@ -1830,13 +1829,14 @@ namespace TechnicSolderHelper
 
         private void UpdateForgeVersions()
         {
+
             var bw = new BackgroundWorker();
             bw.DoWork += (s, args) =>
             {
 
                 UpdatingForge = true;
                 ForgeSqlHelper forgeSqlHelper = new ForgeSqlHelper();
-                forgeSqlHelper.FindAllForgeVersion();
+                forgeSqlHelper.FindAllForgeVersions();
             };
             bw.RunWorkerCompleted += (s, a) =>
             {
@@ -2017,7 +2017,7 @@ namespace TechnicSolderHelper
         {
             forgeVersionDropdown.Items.Clear();
             string selectedMcVersion = mcVersionDropdown.SelectedItem.ToString();
-            List<string> forgeVersions = _forgeSqlHelper.GetForgeVersions(selectedMcVersion);
+            List<string> forgeVersions = _forgeSqlHelper.GetForgeBuilds(selectedMcVersion);
             foreach (string build in forgeVersions)
                 forgeVersionDropdown.Items.Add(build);
             forgeVersionDropdown.SelectedIndex = forgeVersionDropdown.Items.Count - 1;

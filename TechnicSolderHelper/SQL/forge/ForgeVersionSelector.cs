@@ -12,7 +12,7 @@ namespace TechnicSolderHelper.SQL.Forge
             _solderHelper = solderHelper;
             InitializeComponent();
             ForgeSqlHelper helper = new ForgeSqlHelper();
-            List<string> forgeVersions = helper.GetForgeVersions(solderHelper._currentMcVersion);
+            List<string> forgeVersions = helper.GetForgeBuilds(solderHelper._currentMcVersion);
             forgeVersionDropdown.Items.AddRange(forgeVersions.ToArray());
             forgeVersionDropdown.SelectedIndex = forgeVersionDropdown.Items.Count - 1;
         }
