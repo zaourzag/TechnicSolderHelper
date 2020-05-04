@@ -592,7 +592,6 @@ namespace TechnicSolderHelper
             this.forgeVersionDropdown.Size = new System.Drawing.Size(121, 21);
             this.forgeVersionDropdown.TabIndex = 33;
             this.toolTips.SetToolTip(this.forgeVersionDropdown, "The Forge version to include in the modpack");
-            this.forgeVersionDropdown.SelectedIndexChanged += new System.EventHandler(this.forgeVersionDropdown_SelectedIndexChanged);
             // 
             // statusStrip
             // 
@@ -877,7 +876,7 @@ namespace TechnicSolderHelper
                 MessageToUser m = new MessageToUser();
                 Thread startingThread = new Thread(m.FirstTimeRun);
                 startingThread.Start();
-                getLiteLoaderVersionsButton_Click(null, null);
+                UpdateLiteloaderVersions();
                 _confighandler.SetConfig("InputDirectory", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".minecraft", "mods"));
                 _confighandler.SetConfig("OutputDirectory", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "SolderHelper"));
                 _confighandler.SetConfig("FirstRun", "false");
@@ -939,7 +938,6 @@ namespace TechnicSolderHelper
             {
                 useSolderCheckBox.Checked = false;
             }
-            if (useSolderCheckBox.Checked)
             if (useSolderCheckBox.Checked)
             {
                 configureSolderMySQLButton.Show();

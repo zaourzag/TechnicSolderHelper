@@ -263,6 +263,7 @@
     <Compile Include="SQL\FtbPermissions.cs" />
     <Compile Include="SQL\FtbPermissionsSqlHelper.cs" />
     <Compile Include="SQL\liteloader\Liteloader.cs" />
+    <Compile Include="SQL\liteloader\LiteloaderJson.cs" />
     <Compile Include="SQL\ModListSqlHelper.cs" />
     <Compile Include="SQL\OwnPermissionsSqlHelper.cs" />
     <Compile Include="SQL\SolderSqlHandler.cs" />

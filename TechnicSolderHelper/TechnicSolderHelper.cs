@@ -49,7 +49,7 @@ namespace TechnicSolderHelper
         private Ftp _ftp;
         private readonly List<string> _inputDirectories = new List<string>();
         private int _buildId, _modpackId;
-        private bool _updatingForge;
+        private bool _updatingForge, _updatingLiteloader;
         private bool _updatingPermissions;
         private bool _uploadingToFtp, _uploadingToS3, _uploadingToSftp;
 
@@ -62,6 +62,17 @@ namespace TechnicSolderHelper
             set
             {
                 _updatingForge = value;
+                AsyncBlockingProcessUpdated();
+            }
+
+        }
+
+        private bool UpdatingLiteloader
+        {
+            get { return _updatingLiteloader; }
+            set
+            {
+                _updatingLiteloader = value;
                 AsyncBlockingProcessUpdated();
             }
 
@@ -114,7 +125,7 @@ namespace TechnicSolderHelper
             }
             else
             {
-                goButton.Enabled = !UpdatingForge && !UpdatingPermissions;
+                goButton.Enabled = !UpdatingForge && !UpdatingLiteloader && !UpdatingPermissions;
             }
         }
 
@@ -694,8 +705,6 @@ namespace TechnicSolderHelper
                 }
                 else
                 {
-
-
                     //Check the FTB permission sheet for info before doing anything else
                     string shortName = _ftbPermsSqLhelper.GetShortName(SqlHelper.CalculateMd5(file));
                     if (string.IsNullOrWhiteSpace(shortName))
@@ -707,16 +716,16 @@ namespace TechnicSolderHelper
                             switch (fixNr)
                             {
                                 case 1:
-                                    LiteloaderVersion llVersion = _liteloaderSqlHelper.GetInfo(SqlHelper.CalculateMd5(file));
+                                    LiteloaderVersionInfo llVersionInfo = _liteloaderSqlHelper.GetInfo(SqlHelper.CalculateMd5(file));
                                     mod = new McMod
                                     {
-                                        McVersion = llVersion.McVersion,
+                                        McVersion = llVersionInfo.McVersion,
                                         Name = "Liteloader",
-                                        modId = llVersion.TweakClass
+                                        modId = "liteloader"
                                     };
                                     try
                                     {
-                                        mod.Version = llVersion.Version.Substring(llVersion.Version.LastIndexOf("_", StringComparison.Ordinal) + 1);
+                                        mod.Version = llVersionInfo.Version.Substring(llVersionInfo.Version.LastIndexOf("_", StringComparison.Ordinal) + 1);
                                     }
                                     catch (NullReferenceException)
                                     {
@@ -1838,7 +1847,7 @@ namespace TechnicSolderHelper
                 ForgeSqlHelper forgeSqlHelper = new ForgeSqlHelper();
                 forgeSqlHelper.FindAllForgeVersions();
             };
-            bw.RunWorkerCompleted += (s, a) =>
+            bw.RunWorkerCompleted += (s, args) =>
             {
                 UpdatingForge = false;
                 List<string> mcVersions = _forgeSqlHelper.GetMcVersions();
@@ -1869,21 +1878,25 @@ namespace TechnicSolderHelper
 
         private void getLiteLoaderVersionsButton_Click(object sender, EventArgs e)
         {
-            string liteloaderJsonFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            liteloaderJsonFile = Path.Combine(liteloaderJsonFile, "liteloader.json");
-            WebClient wb = new WebClient();
-            Uri webFile = new Uri("http://dl.liteloader.com/versions/versions.json");
-            wb.DownloadFile(webFile, liteloaderJsonFile);
+            UpdateLiteloaderVersions();
+        }
 
-            string json;
-            using (StreamReader r = new StreamReader(liteloaderJsonFile))
-                json = r.ReadToEnd();
-            Liteloader liteLoader = JsonConvert.DeserializeObject<Liteloader>(json);
+        private void UpdateLiteloaderVersions()
+        {
 
-            foreach (KeyValuePair<string, Versions> item in liteLoader.Versions)
-                if (item.Value.Artefacts != null && item.Value.Artefacts.Count > 0)
-                    foreach (VersionInfo it in item.Value.Artefacts["com.mumfrey:liteloader"].Values)
-                        _liteloaderSqlHelper.AddVersion(it.File, it.Version, it.Md5, item.Key, it.TweakClass);
+            var bw = new BackgroundWorker();
+            bw.DoWork += (s, args) =>
+            {
+
+                UpdatingLiteloader = true;
+                LiteloaderSqlHelper liteloaderSqlHelper = new LiteloaderSqlHelper();
+                liteloaderSqlHelper.FindAllLiteloaderVersions();
+            };
+            bw.RunWorkerCompleted += (s, args) =>
+            {
+                UpdatingLiteloader = false;
+            };
+            bw.RunWorkerAsync();
         }
 
         private void configureFtpButton_Click(object sender, EventArgs e)
@@ -2021,11 +2034,6 @@ namespace TechnicSolderHelper
             foreach (string build in forgeVersions)
                 forgeVersionDropdown.Items.Add(build);
             forgeVersionDropdown.SelectedIndex = forgeVersionDropdown.Items.Count - 1;
-        }
-
-        private void forgeVersionDropdown_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
         }
 
         private void toolStripStatusLabel_TextChanged(object sender, EventArgs e)
