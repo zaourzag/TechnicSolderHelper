@@ -1621,11 +1621,18 @@ namespace TechnicSolderHelper
 
         private void resetDatabaseButton_Click(object sender, EventArgs e)
         {
-            _modsSqLHelper.ResetTable();
-            string s = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SolderHelper", "unarchievedFiles");
-            if (Directory.Exists(s))
+            DialogResult result = MessageBox.Show(this, "Are you sure you want to reset the internal mod info database and delete unarchived files?",
+                "Reset Confirmation", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button2);
+
+            if (result == DialogResult.OK)
             {
-                Directory.Delete(s, true);
+                _modsSqLHelper.ResetTable();
+                string unarchivedFilesDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
+                    "SolderHelper", "unarchivedFiles");
+                if (Directory.Exists(unarchivedFilesDirectory))
+                {
+                    Directory.Delete(unarchivedFilesDirectory, true);
+                }
             }
         }
 
