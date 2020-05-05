@@ -498,7 +498,7 @@ namespace TechnicSolderHelper
             // 
             // getPermissionsButton
             // 
-            this.getPermissionsButton.Location = new System.Drawing.Point(101, 419);
+            this.getPermissionsButton.Location = new System.Drawing.Point(100, 417);
             this.getPermissionsButton.Name = "getPermissionsButton";
             this.getPermissionsButton.Size = new System.Drawing.Size(75, 44);
             this.getPermissionsButton.TabIndex = 13;
@@ -508,18 +508,18 @@ namespace TechnicSolderHelper
             // 
             // doneButton
             // 
-            this.doneButton.Location = new System.Drawing.Point(12, 440);
+            this.doneButton.Location = new System.Drawing.Point(100, 492);
             this.doneButton.Name = "doneButton";
             this.doneButton.Size = new System.Drawing.Size(75, 23);
             this.doneButton.TabIndex = 14;
             this.doneButton.Text = "Done";
             this.doneButton.UseVisualStyleBackColor = true;
-            this.doneButton.Click += new System.EventHandler(this.Done_Click);
+            this.doneButton.Click += new System.EventHandler(this.doneButton_Clicked);
             // 
             // skipModCheckBox
             // 
             this.skipModCheckBox.AutoSize = true;
-            this.skipModCheckBox.Location = new System.Drawing.Point(101, 473);
+            this.skipModCheckBox.Location = new System.Drawing.Point(12, 496);
             this.skipModCheckBox.Name = "skipModCheckBox";
             this.skipModCheckBox.Size = new System.Drawing.Size(71, 17);
             this.skipModCheckBox.TabIndex = 12;
