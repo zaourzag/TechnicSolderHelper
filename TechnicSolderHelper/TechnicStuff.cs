@@ -140,7 +140,7 @@ namespace TechnicSolderHelper
             }
             string fileName = modFilePath.Substring(modFilePath.LastIndexOf(Globalfunctions.PathSeperator) + 1);
             string modMd5 = SqlHelper.CalculateMd5(modFilePath);
-            _modsSqLhelper.AddMod(mod.Name, mod.modId, mod.Version, mod.McVersion, fileName, modMd5, false);
+            _modsSqLHelper.AddMod(mod.Name, mod.modId, mod.Version, mod.McVersion, fileName, modMd5, false);
             # region permissions
             if (checkTechnicPermissionsCheckBox.Checked)
             {
@@ -352,7 +352,7 @@ namespace TechnicSolderHelper
                         }
                     }
 
-                    if (!_modsSqLhelper.IsFileInSolder(modFilePath) || force)
+                    if (!_modsSqLHelper.IsFileInSolder(modFilePath) || force)
                     {
                         var modDir = Path.Combine(_outputDirectory, "mods",
                             mod.GetSafeModId(), "mods");
@@ -392,7 +392,7 @@ namespace TechnicSolderHelper
                         process.Start();
 
                         //Save mod to database
-                        _modsSqLhelper.AddMod(mod.Name, mod.modId, mod.Version, mod.McVersion, fileName, modMd5, true);
+                        _modsSqLHelper.AddMod(mod.Name, mod.modId, mod.Version, mod.McVersion, fileName, modMd5, true);
 
                         // Add mod info to a html file
                         CreateTableRow(mod.Name.Replace("|", string.Empty), mod.GetSafeModId(), modVersion);
@@ -466,7 +466,7 @@ namespace TechnicSolderHelper
             }
             else
             {
-                _modsSqLhelper.AddMod(mod.Name, mod.modId, mod.Version, mod.McVersion, fileName, modMd5, false);
+                _modsSqLHelper.AddMod(mod.Name, mod.modId, mod.Version, mod.McVersion, fileName, modMd5, false);
                 while (string.IsNullOrWhiteSpace(_modpackName))
                 {
                     _modpackName = Prompt.ShowDialog("What is the modpack name?", "Modpack Name");

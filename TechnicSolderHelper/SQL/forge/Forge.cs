@@ -12,8 +12,7 @@ namespace TechnicSolderHelper.SQL.Forge
 {
     public sealed class ForgeSqlHelper : SqlHelper
     {
-        public ForgeSqlHelper()
-            : base("forge")
+        public ForgeSqlHelper() : base("forge")
         {
             //reset the table if it was generated before the Forge json URL was changed
             if (DoesFieldExist("type"))

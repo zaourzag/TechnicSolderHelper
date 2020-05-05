@@ -41,8 +41,8 @@ namespace TechnicSolderHelper
             {
                 if (string.IsNullOrWhiteSpace(mcmod.McVersion))
                     mcmod.McVersion = solderHelper._currentMcVersion;
-                mcmod.AreDone = AreModDone(mcmod);
-                if (!mcmod.AreDone)
+                mcmod.IsDone = IsModDone(mcmod);
+                if (!mcmod.IsDone)
                 {
                     ModListSqlHelper modListSqlHelper = new ModListSqlHelper();
                     McMod m = modListSqlHelper.GetModInfo(SqlHelper.CalculateMd5(mcmod.Path));
@@ -57,13 +57,13 @@ namespace TechnicSolderHelper
                                 mcmod.Authors = s;
                             }
                         }
-                        if (!IsValid(mcmod.McVersion))
+                        if (!IsValidModInfoString(mcmod.McVersion))
                         {
                             mcmod.McVersion = _solderHelper._currentMcVersion;
                         }
-                        if (AreModDone(mcmod))
+                        if (IsModDone(mcmod))
                         {
-                            mcmod.AreDone = true;
+                            mcmod.IsDone = true;
                         }
                         else
                         {
@@ -71,23 +71,23 @@ namespace TechnicSolderHelper
                             m = ds.GetMcmod(SqlHelper.CalculateMd5(mcmod.Path));
                             if (m != null)
                             {
-                                if (!IsValid(mcmod.Name))
+                                if (!IsValidModInfoString(mcmod.Name))
                                 {
                                     mcmod.Name = m.Name;
                                 }
-                                if (!IsValid(mcmod.modId))
+                                if (!IsValidModInfoString(mcmod.modId))
                                 {
                                     mcmod.modId = m.modId;
                                 }
-                                if (!IsValid(mcmod.Version))
+                                if (!IsValidModInfoString(mcmod.Version))
                                 {
                                     mcmod.Version = m.Version;
                                 }
                                 mcmod.FromSuggestion = true;
                             }
-                            if (AreModDone(mcmod))
+                            if (IsModDone(mcmod))
                             {
-                                mcmod.AreDone = true;
+                                mcmod.IsDone = true;
                             }
                             else
                             {
@@ -96,26 +96,27 @@ namespace TechnicSolderHelper
                             }
                         }
                     }
-                    if (!mcmod.AreDone)
+
+                    if (!mcmod.IsDone)
                     {
 
                         if (m != null)
                         {
-                            if (!IsValid(mcmod.Name) &&
+                            if (!IsValidModInfoString(mcmod.Name) &&
                                 !string.IsNullOrWhiteSpace(m.Name))
                             {
                                 mcmod.Name = m.Name;
                             }
-                            if (!IsValid(mcmod.modId) && !string.IsNullOrWhiteSpace(m.modId))
+                            if (!IsValidModInfoString(mcmod.modId) && !string.IsNullOrWhiteSpace(m.modId))
                             {
                                 mcmod.modId = m.modId;
                             }
-                            if (!IsValid(mcmod.Version) && !string.IsNullOrWhiteSpace(m.Version))
+                            if (!IsValidModInfoString(mcmod.Version) && !string.IsNullOrWhiteSpace(m.Version))
                             {
                                 mcmod.Version = m.Version;
                             }
                         }
-                        if (!IsValid(mcmod.McVersion))
+                        if (!IsValidModInfoString(mcmod.McVersion))
                         {
                             mcmod.McVersion = _solderHelper._currentMcVersion;
                         }
@@ -128,9 +129,9 @@ namespace TechnicSolderHelper
                                 mcmod.Authors = s;
                             }
                         }
-                        if (AreModDone(mcmod))
+                        if (IsModDone(mcmod))
                         {
-                            mcmod.AreDone = true;
+                            mcmod.IsDone = true;
                         }
                         else
                         {
@@ -138,23 +139,23 @@ namespace TechnicSolderHelper
                             m = ds.GetMcmod(SqlHelper.CalculateMd5(mcmod.Path));
                             if (m != null)
                             {
-                                if (!IsValid(mcmod.Name))
+                                if (!IsValidModInfoString(mcmod.Name))
                                 {
                                     mcmod.Name = m.Name;
                                 }
-                                if (!IsValid(mcmod.modId))
+                                if (!IsValidModInfoString(mcmod.modId))
                                 {
                                     mcmod.modId = m.modId;
                                 }
-                                if (!IsValid(mcmod.Version))
+                                if (!IsValidModInfoString(mcmod.Version))
                                 {
                                     mcmod.Version = m.Version;
                                 }
                                 mcmod.FromSuggestion = true;
                             }
-                            if (AreModDone(mcmod))
+                            if (IsModDone(mcmod))
                             {
-                                mcmod.AreDone = true;
+                                mcmod.IsDone = true;
                             }
                             else
                             {
@@ -177,37 +178,37 @@ namespace TechnicSolderHelper
             }
         }
 
-        private bool IsValid(string s)
+        private bool IsValidModInfoString(string s)
         {
-            if (string.IsNullOrWhiteSpace(s) || s.Contains("@") || s.Contains("${") || s.ToLower().Contains("example"))
-            {
-                return false;
-            }
-            return true;
+            return !(string.IsNullOrWhiteSpace(s) || s.Contains("@") || s.Contains("${") || s.ToLower().Contains("example"));
         }
 
         private static bool IsFullyInformed(McMod mod)
         {
             if (string.IsNullOrWhiteSpace(mod.Name) || string.IsNullOrWhiteSpace(mod.Version) ||
                 string.IsNullOrWhiteSpace(mod.McVersion) || string.IsNullOrWhiteSpace(mod.modId) || (mod.AuthorList == null && mod.Authors == null))
+            {
                 return false;
-            Debug.WriteLine(mod.Version);
+            }
+
+            //Debug.WriteLine(mod.Version);
             if (mod.Name.Contains("${") || mod.Version.Contains("${") || mod.McVersion.Contains("${") || mod.modId.Contains("${") || mod.Version.ToLower().Contains("@version@") || mod.modId.ToLower().Contains("example") || mod.Version.ToLower().Contains("example") || mod.Name.ToLower().Contains("example"))
             {
                 return false;
             }
+
             return true;
         }
 
-        private bool AreModDone(McMod mod)
+        private bool IsModDone(McMod mod)
         {
             if (!IsFullyInformed(mod)) return false;
             OwnPermissionsSqlHelper ownPermissionsSqlHelper = new OwnPermissionsSqlHelper();
-            bool b = ownPermissionsSqlHelper.DoUserHavePermission(mod.modId).HasPermission;
-            if (b)
+            if (ownPermissionsSqlHelper.DoUserHavePermission(mod.modId).HasPermission)
             {
                 return true;
             }
+
             if (_solderHelper.createTechnicPackCheckBox.Checked && _solderHelper.checkTechnicPermissionsCheckBox.Checked)
             {
                 if (_ftbPermissionsSqlHelper.FindPermissionPolicy(mod.modId,
@@ -216,17 +217,11 @@ namespace TechnicSolderHelper
                     return false;
                 }
             }
+
             if (!_solderHelper.createFTBPackCheckBox.Checked) return true;
-            PermissionPolicy p = _ftbPermissionsSqlHelper.FindPermissionPolicy(mod.modId,
+            PermissionPolicy permissionPolicy = _ftbPermissionsSqlHelper.FindPermissionPolicy(mod.modId,
                 _solderHelper.ftbPublicPackRadioButton.Checked);
-            if (p == PermissionPolicy.Open || p == PermissionPolicy.FTB)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return permissionPolicy == PermissionPolicy.Open || permissionPolicy == PermissionPolicy.FTB;
         }
 
         private void modListBox_SelectedIndexChanged(object sender, EventArgs e)
@@ -443,7 +438,6 @@ namespace TechnicSolderHelper
             }
         }
 
-
         private void getPermissionsButton_Click(object sender, EventArgs e)
         {
             ShowPermissions();
@@ -493,7 +487,7 @@ namespace TechnicSolderHelper
 
         }
 
-        private void Done_Click(object sender, EventArgs e)
+        private void doneButton_Clicked(object sender, EventArgs e)
         {
             foreach (McMod mcmod in _mods)
             {
@@ -507,15 +501,16 @@ namespace TechnicSolderHelper
                 }
                 if (string.IsNullOrWhiteSpace(mcmod.modId))
                 {
+                    //TODO: get this by looking at mcmod.info
                     mcmod.modId = mcmod.Name.Replace(" ", "").ToLower();
                 }
-                if (!AreModDone(mcmod))
+                if (!IsModDone(mcmod))
                 {
                     MessageBox.Show("Please check all mods and make sure the info is filled in." +
                                     Environment.NewLine + "Issue with mod: " + mcmod.Filename);
                     return;
                 }
-                mcmod.AreDone = true;
+                mcmod.IsDone = true;
             }
             foreach (McMod mcmod in _mods)
             {

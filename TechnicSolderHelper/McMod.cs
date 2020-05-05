@@ -60,7 +60,7 @@ namespace TechnicSolderHelper
 
         public string Path { get; set; }
 
-        public bool AreDone { get; set; }
+        public bool IsDone { get; set; }
 
         private static string reg = null;
         public virtual string GetSafeModId()

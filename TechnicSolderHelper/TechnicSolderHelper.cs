@@ -30,7 +30,7 @@ namespace TechnicSolderHelper
 
         private string _inputDirectory;
         private string _outputDirectory;
-        private readonly ModListSqlHelper _modsSqLhelper = new ModListSqlHelper();
+        private readonly ModListSqlHelper _modsSqLHelper = new ModListSqlHelper();
         private readonly FtbPermissionsSqlHelper _ftbPermsSqLhelper = new FtbPermissionsSqlHelper();
         private readonly OwnPermissionsSqlHelper _ownPermsSqLhelper = new OwnPermissionsSqlHelper();
         private readonly ForgeSqlHelper _forgeSqlHelper = new ForgeSqlHelper();
@@ -259,10 +259,12 @@ namespace TechnicSolderHelper
                 MessageBox.Show("Input directory does not exist.");
                 return true;
             }
+
             if (!_inputDirectories.Contains(_inputDirectory))
             {
                 _inputDirectories.Add(_inputDirectory);
             }
+
             if (clearOutputDirectoryCheckBox.Checked)
             {
                 if (Directory.Exists(_outputDirectory))
@@ -278,6 +280,7 @@ namespace TechnicSolderHelper
                     }
                 }
             }
+
             if (uploadToFTPServerCheckBox.Checked)
             {
                 var tmp = _confighandler.GetConfig("ftpUrl");
@@ -399,6 +402,13 @@ namespace TechnicSolderHelper
             List<string> files = new List<string>();
             _totalMods = 0;
             _currentMod = 0;
+
+            if (!Directory.Exists(_inputDirectory))
+            {
+                MessageBox.Show("Input directory does not exist.");
+                return files;
+            }
+
             // Add the different mod files to the files array
             foreach (string file in Directory.GetFiles(_inputDirectory, "*.zip", SearchOption.AllDirectories))
             {
@@ -473,8 +483,8 @@ namespace TechnicSolderHelper
                 return;
             }
             AddedModStringBuilder.Clear();
-            List<string> files = GetModFiles();
             toolStripStatusLabel.Text = "Finding files";
+            List<string> files = GetModFiles();
             while (string.IsNullOrWhiteSpace(_modpackName))
             {
                 _modpackName = Prompt.ShowDialog("What is the modpack name?", "Modpack Name");
@@ -520,7 +530,7 @@ namespace TechnicSolderHelper
                 //Check for mcmod.info
                 toolStripStatusLabel.Text = FileName;
                 Directory.CreateDirectory(_outputDirectory);
-                McMod tmpMod = _modsSqLhelper.GetModInfo(SqlHelper.CalculateMd5(file));
+                McMod tmpMod = _modsSqLHelper.GetModInfo(SqlHelper.CalculateMd5(file));
                 if (tmpMod != null)
                 {
                     tmpMod.Filename = FileName;
@@ -1116,7 +1126,7 @@ namespace TechnicSolderHelper
                 Thread.Sleep(100);
             }
             toolStripStatusLabel.Text = "Saving mod data";
-            _modsSqLhelper.SaveData();
+            _modsSqLHelper.SaveData();
             toolStripStatusLabel.Text = "Done saving mod data";
 
             if (Directory.Exists(Path.Combine(_outputDirectory, "assets")))
@@ -1246,95 +1256,93 @@ namespace TechnicSolderHelper
             {
                 _runningProcess++;
                 ForgeVersionInfo forgeInfo = _forgeSqlHelper.GetForgeInfo(forgeVersion);
-                bool skip = false;
-                if (uploadToSolder)
+                string tempDir = Path.Combine(_outputDirectory, "bin");
+                Directory.CreateDirectory(tempDir);
+                string tempFile = Path.Combine(tempDir, "modpack.jar");
+
+                WebClient webClient = new WebClient();
+                try
                 {
-                    if (_solderSqlHandler.IsModVersionOnline("forge", forgeInfo.Version))
+                    webClient.DownloadFile(forgeInfo.DownloadUrl, tempFile);
+                }
+                catch (WebException)
+                {
+                    ForgeVersionSelector forgeVersionSelector = new ForgeVersionSelector(this);
+                    if (!forgeVersionSelector.IsDisposed)
                     {
-                        skip = true;
+                        forgeVersionSelector.ShowDialog();
+                        return;
                     }
                 }
-                if (!skip)
+
+                if (solderPack)
                 {
-                    string tempDir = Path.Combine(_outputDirectory, "bin");
-                    Directory.CreateDirectory(tempDir);
-                    string tempFile = Path.Combine(tempDir, "modpack.jar");
-
-                    WebClient wb = new WebClient();
-                    try
+                    Directory.CreateDirectory(Path.Combine(_outputDirectory, "mods", "forge"));
+                    string outputFile = Path.Combine(_outputDirectory, "mods", "forge",
+                        "forge-" + forgeInfo.Version + ".zip");
+                    if (Globalfunctions.IsUnix())
                     {
-                        wb.DownloadFile(forgeInfo.DownloadUrl, tempFile);
-                    }
-                    catch (WebException)
-                    {
-                        ForgeVersionSelector forgeVersionSelector = new ForgeVersionSelector(this);
-                        if (!forgeVersionSelector.IsDisposed)
-                        {
-                            forgeVersionSelector.ShowDialog();
-                            return;
-                        }
-                    }
-                    if (solderPack)
-                    {
-                        Directory.CreateDirectory(Path.Combine(_outputDirectory, "mods", "forge"));
-                        string outputFile = Path.Combine(_outputDirectory, "mods", "forge",
-                            "forge-" + forgeInfo.Version + ".zip");
-                        if (Globalfunctions.IsUnix())
-                        {
-                            _startInfo.FileName = "zip";
-                            Environment.CurrentDirectory = _outputDirectory;
-                            _startInfo.Arguments = "-r \"" + outputFile + "\" \"bin\"";
-                        }
-                        else
-                        {
-                            _startInfo.Arguments = "a -y \"" + outputFile + "\" \"" + tempDir + "\"";
-                        }
-                        CreateTableRow("Minecraft Forge", "forge", forgeInfo.Version.ToLower());
-
-
+                        _startInfo.FileName = "zip";
+                        Environment.CurrentDirectory = _outputDirectory;
+                        _startInfo.Arguments = "-r \"" + outputFile + "\" \"bin\"";
                     }
                     else
                     {
-                        if (Globalfunctions.IsUnix())
-                        {
-                            Environment.CurrentDirectory = _outputDirectory;
-                            _startInfo.FileName = "zip";
-                            _startInfo.Arguments = "-r \"" + _modpackArchive + "\" \"bin\"";
-                        }
-                        else
-                        {
-                            _startInfo.Arguments = "a -y \"" + _modpackArchive + "\" \"" + tempDir + "\"";
-                        }
+                        _startInfo.Arguments = "a -y \"" + outputFile + "\" \"" + tempDir + "\"";
                     }
-                    _process.StartInfo = _startInfo;
-                    _process.Start();
-                    _process.WaitForExit();
+                    CreateTableRow("Minecraft Forge", "forge", forgeInfo.Version.ToLower());
 
-                    if (solderPack && uploadToSolder)
-                    {
-                        int id = _solderSqlHandler.GetModId("forge");
-                        if (id == -1)
-                        {
-                            _solderSqlHandler.AddModToSolder("forge",
-                                "Minecraft Forge is a common open source API allowing a broad range of mods to work cooperatively together. It allows many mods to be created without them editing the main Minecraft code.",
-                                "LexManos, Eloram, Spacetoad", "http://MinecraftForge.net", "Minecraft Forge");
-                            id = _solderSqlHandler.GetModId("forge");
-                        }
-                        string outputFile = Path.Combine(_outputDirectory, "mods", "forge",
-                            "forge-" + forgeInfo.Version + ".zip");
-                        string md5 = SqlHelper.CalculateMd5(outputFile).ToLower();
-                        if (_solderSqlHandler.IsModVersionOnline("forge", forgeInfo.Version))
-                            _solderSqlHandler.UpdateModVersionMd5("forge", forgeInfo.Version, md5);
-                        else
-                            _solderSqlHandler.AddNewModVersionToSolder(id, forgeInfo.Version.ToLower(), md5);
 
-                        int modVersionId = _solderSqlHandler.GetModVersionId(_solderSqlHandler.GetModId("forge"),
-                            forgeInfo.Version.ToLower());
-                        _solderSqlHandler.AddModVersionToBuild(_buildId, modVersionId);
-                    }
-
-                    Directory.Delete(tempDir, true);
                 }
+                else
+                {
+                    if (Globalfunctions.IsUnix())
+                    {
+                        Environment.CurrentDirectory = _outputDirectory;
+                        _startInfo.FileName = "zip";
+                        _startInfo.Arguments = "-r \"" + _modpackArchive + "\" \"bin\"";
+                    }
+                    else
+                    {
+                        _startInfo.Arguments = "a -y \"" + _modpackArchive + "\" \"" + tempDir + "\"";
+                    }
+                }
+                _process.StartInfo = _startInfo;
+                _process.Start();
+                _process.WaitForExit();
+
+                if (solderPack && uploadToSolder)
+                {
+                    int id = _solderSqlHandler.GetModId("forge");
+                    if (id == -1)
+                    {
+                        _solderSqlHandler.AddModToSolder("forge",
+                            "Minecraft Forge is a common open source API allowing a broad range of mods to work cooperatively together. It allows many mods to be created without them editing the main Minecraft code.",
+                            "LexManos, Eloram, Spacetoad", "http://MinecraftForge.net", "Minecraft Forge");
+                        id = _solderSqlHandler.GetModId("forge");
+                    }
+                    string outputFile = Path.Combine(_outputDirectory, "mods", "forge",
+                        "forge-" + forgeInfo.Version + ".zip");
+                    string md5 = SqlHelper.CalculateMd5(outputFile).ToLower();
+
+                    //update the MD5 in Solder if this version of Forge is already there
+                    if (_solderSqlHandler.IsModVersionOnline("forge", forgeInfo.Version))
+                    {
+                        _solderSqlHandler.UpdateModVersionMd5("forge", forgeInfo.Version, md5);
+                    }
+                    //if the version isn't there, add it
+                    else
+                    {
+                        _solderSqlHandler.AddNewModVersionToSolder(id, forgeInfo.Version.ToLower(), md5);
+                    }
+
+                    int modVersionId = _solderSqlHandler.GetModVersionId(_solderSqlHandler.GetModId("forge"),
+                        forgeInfo.Version.ToLower());
+                    _solderSqlHandler.AddModVersionToBuild(_buildId, modVersionId);
+                }
+
+                Directory.Delete(tempDir, true);
+                
                 _runningProcess--;
             };
             worker.RunWorkerAsync();
@@ -1433,6 +1441,15 @@ namespace TechnicSolderHelper
             }
         }
 
+        #region RequireUserInfo
+        /*
+         private void RequireUserInfo(string file)
+        {
+            McMod mod = new McMod { McVersion = null, modId = null, Name = null, Version = null };
+
+            RequireUserInfo(mod, file);
+        }
+
         private void RequireUserInfo(McMod currentData, string file)
         {
             try
@@ -1444,7 +1461,7 @@ namespace TechnicSolderHelper
 
                 try
                 {
-                    mod = _modsSqLhelper.GetModInfo(s);
+                    mod = _modsSqLHelper.GetModInfo(s);
                     Debug.WriteLine("Got from local database");
                 }
                 catch (Exception e)
@@ -1571,13 +1588,8 @@ namespace TechnicSolderHelper
                 RequireUserInfo(file);
             }
         }
-
-        private void RequireUserInfo(string file)
-        {
-            McMod mod = new McMod { McVersion = null, modId = null, Name = null, Version = null };
-
-            RequireUserInfo(mod, file);
-        }
+        */
+        #endregion
 
         private void inputDirectoryBrowseButton_Click(object sender, EventArgs e)
         {
@@ -1609,7 +1621,7 @@ namespace TechnicSolderHelper
 
         private void resetDatabaseButton_Click(object sender, EventArgs e)
         {
-            _modsSqLhelper.ResetTable();
+            _modsSqLHelper.ResetTable();
             string s = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SolderHelper", "unarchievedFiles");
             if (Directory.Exists(s))
             {
@@ -2052,6 +2064,7 @@ namespace TechnicSolderHelper
             string unknownFilesList = Path.Combine(_outputDirectory, "Unknown Files.txt");
             string errorPermissionListTechnic = Path.Combine(_outputDirectory, "Missing Permissions Technic.txt");
             string errorPermissionListFtb = Path.Combine(_outputDirectory, "Missing Permissions FTB.txt");
+
             if (File.Exists(_ftbOwnPermissionList))
             {
                 File.Delete(_ftbOwnPermissionList);
@@ -2076,10 +2089,15 @@ namespace TechnicSolderHelper
             {
                 File.Delete(errorPermissionListFtb);
             }
+            if (!Directory.Exists(_outputDirectory))
+            {
+                Directory.CreateDirectory(_outputDirectory);
+            }
+
             List<string> files = GetModFiles();
             foreach (string file in files)
             {
-                McMod mod = _modsSqLhelper.GetModInfo(SqlHelper.CalculateMd5(file));
+                McMod mod = _modsSqLHelper.GetModInfo(SqlHelper.CalculateMd5(file));
                 if (mod == null)
                 {
                     var errorFile = new FileInfo(file);

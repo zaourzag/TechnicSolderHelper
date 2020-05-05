@@ -53,7 +53,7 @@ namespace TechnicSolderHelper
             {
                 if (!mod.UseShortName)
                 {
-                    _modsSqLhelper.AddMod(mod.Name, mod.modId, mod.Version, mod.McVersion, fileName, modMd5, false);
+                    _modsSqLHelper.AddMod(mod.Name, mod.modId, mod.Version, mod.McVersion, fileName, modMd5, false);
                 }
                 if (true)
                 {
@@ -258,7 +258,6 @@ namespace TechnicSolderHelper
                 }
 
             }
-
 
             string tempModDirectory = Path.Combine(_outputDirectory, "minecraft", "mods");
             Directory.CreateDirectory(tempModDirectory);
