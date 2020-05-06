@@ -332,6 +332,8 @@ namespace TechnicSolderHelper
             this.additionalFoldersPanel.Name = "additionalFoldersPanel";
             this.additionalFoldersPanel.Size = new System.Drawing.Size(149, 405);
             this.additionalFoldersPanel.TabIndex = 0;
+            this.additionalFoldersPanel.MouseEnter += new System.EventHandler(this.additionalFoldersPanel_MouseEnter);
+            this.additionalFoldersPanel.MouseLeave += new System.EventHandler(this.additionalFoldersPanel_MouseLeave);
             // 
             // configureFtpButton
             // 

@@ -20,7 +20,6 @@ using TechnicSolderHelper.SmallInterfaces;
 using TechnicSolderHelper.SQL;
 using TechnicSolderHelper.SQL.Forge;
 using TechnicSolderHelper.SQL.liteloader;
-using TechnicSolderHelper.SQL.WorkTogether;
 
 namespace TechnicSolderHelper
 {
@@ -49,12 +48,14 @@ namespace TechnicSolderHelper
         private Ftp _ftp;
         private readonly List<string> _inputDirectories = new List<string>();
         private int _buildId, _modpackId;
-        private bool _updatingForge, _updatingLiteloader;
-        private bool _updatingPermissions;
+        private bool _updatingForge, _updatingLiteloader, _updatingPermissions;
         private bool _uploadingToFtp, _uploadingToS3, _uploadingToSftp;
 
         private int _runningProcess;
         private readonly Dictionary<string, int> _processesUsingFolder = new Dictionary<string, int>();
+
+        private bool additionalFoldersPanelOrChildFocused = false;
+        private Control _lastFocusedControl;
 
         private bool UpdatingForge
         {
@@ -162,6 +163,40 @@ namespace TechnicSolderHelper
             {
                 additionalFoldersGroupBox.Height = Height - 522 + 427;
             }
+        }
+
+        public static Control FindFocusedControl(Control control)
+        {
+            var container = control as IContainerControl;
+            while (container != null)
+            {
+                control = container.ActiveControl;
+                container = control as IContainerControl;
+            }
+            return control;
+        }
+
+        public static Control FindControlAtPoint(Control container, Point pos)
+        {
+            Control child;
+            foreach (Control c in container.Controls)
+            {
+                if (c.Visible && c.Bounds.Contains(pos))
+                {
+                    child = FindControlAtPoint(c, new Point(pos.X - c.Left, pos.Y - c.Top));
+                    if (child == null) return c;
+                    else return child;
+                }
+            }
+            return null;
+        }
+
+        public static Control FindControlAtCursor(Form form)
+        {
+            Point pos = Cursor.Position;
+            if (form.Bounds.Contains(pos))
+                return FindControlAtPoint(form, form.PointToClient(pos));
+            return null;
         }
 
         public string GetAuthors(McMod mod, bool listview = false)
@@ -1931,6 +1966,29 @@ namespace TechnicSolderHelper
             string json = JsonConvert.SerializeObject(_inputDirectories);
             FileInfo inputDirectoriesFile = new FileInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "SolderHelper", "inputDirectories.json"));
             File.WriteAllText(inputDirectoriesFile.ToString(), json);
+        }
+
+        private void additionalFoldersPanel_MouseEnter(object sender, EventArgs e)
+        {
+            if (!additionalFoldersPanelOrChildFocused)
+            {
+                _lastFocusedControl = FindFocusedControl(this);
+                additionalFoldersPanel.Focus();
+                additionalFoldersPanelOrChildFocused = true;
+            }
+        }
+
+        private void additionalFoldersPanel_MouseLeave(object sender, EventArgs e)
+        {
+            Control control = FindControlAtCursor(this);
+
+            //if we're actually truly leaving the panel, return focus to the last element
+            if (control == null || !control.Parent.Equals(additionalFoldersPanel))
+            {
+                _lastFocusedControl.Focus();
+                _lastFocusedControl = null;
+                additionalFoldersPanelOrChildFocused = false;
+            }
         }
 
         private void uploadToSFTPCheckBox_CheckedChanged(object sender, EventArgs e)
