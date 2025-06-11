@@ -52,7 +52,8 @@ command -v zip >/dev/null 2>&1 || { install "zip"; }
 command -v unzip >/dev/null 2>&1 || { install "unzip"; }
 command -v mono >/dev/null 2>&1 || { install "mono"; }
 
-dl "https://web.archive.org/web/20160422004256/http://zlepper.dk/solderhelper/TechnicSolderHelper.zip"
+dl "https://github.com/zaourzag/TechnicSolderHelper/raw/newdev/TechnicSolderHelper.zip"
+
 trap "rm 'TechnicSolderHelper.zip'" EXIT
 extract "TechnicSolderHelper.zip"
 makexec "TechnicSolderHelper/SolderHelper.desktop"
